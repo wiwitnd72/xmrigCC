@@ -42,7 +42,7 @@ public:
     static bool start();
     static void release();
 
-    static unsigned handleGET(const Options* options, const std::string& url, const std::string& clientIp, const std::string& clientId, std::string& resp);
+    static unsigned handleGET(const Options* options, const std::string& url, const std::string& clientIp, std::map<std::string, std::string>& args, std::string& resp);
     static unsigned handlePOST(const Options* options, const std::string& url, const std::string& clientIp, const std::string& clientId, const std::string& data, std::string& resp);
 
 private:
@@ -70,6 +70,7 @@ private:
 
     static uv_mutex_t m_mutex;
 
+    static unsigned int getDownloadLink(std::map<std::string, std::string> &map, std::string &basic_string);
 };
 
 #endif /* __SERVICE_H__ */

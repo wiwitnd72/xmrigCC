@@ -62,20 +62,23 @@ void Service::release()
     uv_mutex_unlock(&m_mutex);
 }
 
-unsigned Service::handleGET(const Options* options, const std::string& url, const std::string& clientIp, const std::string& clientId, std::string& resp)
+unsigned Service::handleGET(const Options* options, const std::string& url, const std::string& clientIp, std::map<std::string, std::string>& args, std::string& resp)
 {
     uv_mutex_lock(&m_mutex);
 
     unsigned resultCode = MHD_HTTP_NOT_FOUND;
 
     std::string params;
-    if (!clientId.empty())
-    {
-        params += "?clientId=";
-        params += clientId;
+    for (auto arg : args) {
+        params += arg.first;
+        params += "=";
+        params += arg.second;
+        params += ";";
     }
 
-    LOG_INFO("[%s] GET '%s%s'", clientIp.c_str(), url.c_str(), params.c_str());
+    std::string clientId = args["clientId"];
+
+    LOG_INFO("[%s] GET '%s   args: %s'", clientIp.c_str(), url.c_str(), params.c_str());
 
     if (url == "/") {
         resultCode = getAdminPage(options, resp);
@@ -85,6 +88,8 @@ unsigned Service::handleGET(const Options* options, const std::string& url, cons
         if (!clientId.empty()) {
             if (url.rfind("/client/getConfig", 0) == 0 || url.rfind("/admin/getClientConfig", 0) == 0) {
                 resultCode = getClientConfig(options, clientId, resp);
+            } else if (url.rfind("/client/getDownloadLink", 0) == 0) {
+                resultCode = getDownloadLink(args, resp);
             } else if (url.rfind("/admin/getClientCommand", 0) == 0) {
                 resultCode = getClientCommand(clientId, resp);
             } else if (url.rfind("/admin/getClientLog", 0) == 0) {
@@ -399,6 +404,13 @@ void Service::setClientLog(size_t maxRows, const std::string& clientId, const st
 unsigned Service::resetClientStatusList(const std::string& data, std::string& resp)
 {
     m_clientStatus.clear();
+
+    return MHD_HTTP_OK;
+}
+
+unsigned int Service::getDownloadLink(std::map<std::string, std::string> &args, std::string &resp)
+{
+
 
     return MHD_HTTP_OK;
 }

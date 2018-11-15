@@ -57,6 +57,7 @@ private:
     static int handler(void* httpd, MHD_Connection* connection, const char* url, const char* method, const char* version, const char* upload_data, size_t* upload_data_size, void**con_cls);
     static int handleGET(const Httpd* httpd, MHD_Connection* connection, const std::string& clientIp, const char* url);
     static int handlePOST(const Httpd* httpd, MHD_Connection* connection, const std::string& clientIp, const char* url, const char* upload_data, size_t* upload_data_size, void** con_cls);
+    static int ArgumentMapper(void *cls, enum MHD_ValueKind kind, const char *key, const char *value);
 
 	static std::string readFile(const std::string &fileName);
 

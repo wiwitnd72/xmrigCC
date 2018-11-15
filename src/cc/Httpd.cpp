@@ -231,15 +231,11 @@ int Httpd::handleGET(const Httpd* httpd, struct MHD_Connection* connection, cons
 {
     std::string resp;
     std::string url(urlPtr);
-    std::string clientId;
 
-    const char* clientIdPtr = MHD_lookup_connection_value(connection, MHD_GET_ARGUMENT_KIND, "clientId");
-    if (clientIdPtr)
-    {
-        clientId = std::string(clientIdPtr);
-    }
+    std::map<std::string, std::string> args;
+    MHD_get_connection_values(connection, MHD_GET_ARGUMENT_KIND, &ArgumentMapper, &args);
 
-    unsigned status = Service::handleGET(httpd->m_options, url, clientIp, clientId, resp);
+    unsigned status = Service::handleGET(httpd->m_options, url, clientIp, args, resp);
 
     MHD_Response* rsp = nullptr;
     if (!resp.empty()) {
@@ -294,3 +290,15 @@ int Httpd::handlePOST(const Httpd* httpd, struct MHD_Connection* connection, con
 
     return MHD_YES;
 }
+
+int Httpd::ArgumentMapper(void *cls, enum MHD_ValueKind kind, const char *key, const char *value)
+{
+   if (cls == nullptr || key == nullptr) {
+       return MHD_NO;
+   }
+
+   auto *arguments = reinterpret_cast<std::map<std::string, std::string>*>(cls);
+   arguments->insert(std::make_pair(key, value != nullptr ? value : ""));
+
+   return MHD_YES;
+ }
