@@ -1,6 +1,5 @@
-/* XMRigd
- * Copyright 2017-     BenDr0id    <ben@graef.in>
- *
+/* XMRigCC
+ * Copyright 2017-     BenDr0id    <https://github.com/BenDr0id>, <ben@graef.in>
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -74,6 +73,6 @@ int main(int argc, char **argv) {
 	}
 #else
 
-    } while (WEXITSTATUS(status) != EINVAL && WEXITSTATUS(status) != SIGHUP && WEXITSTATUS(status) != SIGINT);
+    } while (WEXITSTATUS(status) != EINVAL && WEXITSTATUS(status) != SIGHUP && WEXITSTATUS(status) != SIGINT && WEXITSTATUS(status) != 0);
 #endif
 }
