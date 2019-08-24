@@ -127,7 +127,7 @@ void xmrig::CCClient::updateClientInfo()
     const Assembly assembly = Cpu::assembly(cpuInfo->assembly());
     m_clientStatus.setAssembly(assembly.toString());
 #   else
-    m_clientStatus.setAssembly(false);
+    m_clientStatus.setAssembly("none");
 #   endif
 
 
