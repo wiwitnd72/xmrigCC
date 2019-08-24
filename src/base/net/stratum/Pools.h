@@ -55,7 +55,7 @@ public:
     inline int donateLevel() const                      { return m_donateLevel; }
     inline int retries() const                          { return m_retries; }
     inline int retryPause() const                       { return m_retryPause; }
-    inline ProxyDonate proxyDonate() const              { return m_proxyDonate; }
+    inline ProxyDonate proxyDonate() const              { return PROXY_DONATE_NONE; }
 
     inline bool operator!=(const Pools &other) const    { return !isEqual(other); }
     inline bool operator==(const Pools &other) const    { return isEqual(other); }
