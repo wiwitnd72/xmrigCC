@@ -63,6 +63,7 @@ xmrig::CCClient::CCClient(Base *base)
 #endif
         : m_base(base),
           m_startTime(Chrono::currentMSecsSinceEpoch()),
+          m_configPublishedOnStart(false),
           m_timer(nullptr)
 {
     base->addListener(this);
@@ -78,10 +79,6 @@ void xmrig::CCClient::start()
 {
     updateAuthorization();
     updateClientInfo();
-
-    if (m_base->config()->ccClient().uploadConfigOnStartup()) {
-        publishConfig();
-    }
 
     m_timer = new Timer(this,
                         static_cast<uint64_t>(m_base->config()->ccClient().updateInterval()*1000),
@@ -140,6 +137,8 @@ void xmrig::CCClient::updateClientInfo()
 
 void xmrig::CCClient::stop()
 {
+    m_configPublishedOnStart = false;
+
     if (m_timer) {
         m_timer->stop();
     }
@@ -370,6 +369,11 @@ void xmrig::CCClient::onConfigChanged(Config *config, Config *previousConfig)
 
 void xmrig::CCClient::onTimer(const xmrig::Timer *timer)
 {
+    if (!m_configPublishedOnStart && m_base->config()->ccClient().uploadConfigOnStartup()) {
+        m_configPublishedOnStart = true;
+        publishConfig();
+    }
+
     updateUptime();
     updateLog();
     updateStatistics();

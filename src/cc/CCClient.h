@@ -87,7 +87,9 @@ private:
 #endif
     const uint64_t m_startTime;
     ClientStatus m_clientStatus;
+
     std::string m_authorization;
+    bool m_configPublishedOnStart;
 
     Timer *m_timer;
     std::vector<ICommandListener *> m_Commandlisteners;

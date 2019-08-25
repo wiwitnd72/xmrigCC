@@ -177,6 +177,12 @@ int xmrig::Base::init()
 {
     d_ptr->config = d_ptr->load();
 
+    if (!d_ptr->config) {
+        LOG_EMERG("No valid configuration found. Exiting.");
+
+        return 1;
+    }
+
 #ifndef XMRIG_NO_CC
     if (!d_ptr->config->isDaemonized()) {
         LOG_EMERG(APP_ID " is compiled with CC support, please start the daemon instead.\n");
@@ -184,12 +190,6 @@ int xmrig::Base::init()
         return 1;
     }
 #endif
-
-    if (!d_ptr->config) {
-        LOG_EMERG("No valid configuration found. Exiting.");
-
-        return 1;
-    }
 
     Platform::init(config()->userAgent());
 
