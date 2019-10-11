@@ -15,10 +15,35 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "CCServer.h"
+#include <memory>
 
+#include "base/io/log/backends/ConsoleLog.h"
+#include "base/io/log/backends/FileLog.h"
+#include "base/io/log/Log.h"
+#include "Config.h"
+#include "Httpd.h"
 
-int main(int argc, char** argv) {
-    CCServer ccServer(argc, argv);
-    return ccServer.start();
+std::shared_ptr<Config> m_config;
+std::shared_ptr<Httpd> m_httpd;
+
+int main(int argc, char** argv)
+{
+  m_config = std::make_shared<Config>();
+
+  xmrig::Log::add(new xmrig::ConsoleLog());
+  if (m_config->logFile)
+  {
+    xmrig::Log::add(new xmrig::FileLog(m_config->logFileName.c_str()));
+  }
+
+  std::thread([]()
+  {
+    uv_run(uv_default_loop(), UV_RUN_DEFAULT);
+    uv_loop_close(uv_default_loop());
+  }).detach();
+
+  m_httpd = std::make_shared<Httpd>(m_config);
+  m_httpd->start();
+
+  return 0;
 }

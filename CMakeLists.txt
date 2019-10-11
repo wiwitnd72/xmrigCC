@@ -21,10 +21,11 @@ option(WITH_HTTP            "Enable HTTP protocol support (client/server)" ON)
 option(WITH_CN_EXTREMELITE  "CryptoNight-Extremelite support" ON)
 option(WITH_DEBUG_LOG       "Enable debug log output" OFF)
 option(WITH_TLS             "Enable OpenSSL support" ON)
+option(WITH_ZLIB            "Enabled gzip compression on CC (client/server)")
 option(WITH_ASM             "Enable ASM PoW implementations" ON)
 option(WITH_EMBEDDED_CONFIG "Enable internal embedded JSON config" OFF)
 option(WITH_CC_CLIENT       "CC Client" ON)
-option(WITH_CC_SERVER       "CC Server" OFF)
+option(WITH_CC_SERVER       "CC Server" ON)
 
 option(BUILD_STATIC         "Build static binary" OFF)
 option(ARM_TARGET           "Force use specific ARM target 8 or 7" 0)
@@ -203,16 +204,13 @@ if (WITH_EMBEDDED_CONFIG)
 endif()
 
 if (WITH_CC_SERVER)
-    if (MHD_FOUND)
-        include_directories(${MHD_INCLUDE_DIRS})
-    else()
-        message(FATAL_ERROR "microhttpd NOT found: use `-DWITH_CC_SERVER=OFF` to build without CC Server support")
-    endif(MHD_FOUND)
-
     set(SOURCES_CC_SERVER
-            src/cc/CCServer.cpp
+            src/base/io/log/backends/ConsoleLog.cpp
+            src/base/io/log/backends/FileLog.cpp
+            src/base/io/log/Log.cpp
+            #src/cc/CCServer.cpp
+            #src/cc/Summary.cpp
             src/cc/Service.cpp
-            src/cc/Summary.cpp
             src/cc/Httpd.cpp
             src/cc/XMRigCC.cpp
             )
@@ -228,7 +226,6 @@ if (WITH_CC_CLIENT)
     if (WITH_TLS)
         add_definitions(/DCPPHTTPLIB_OPENSSL_SUPPORT)
     endif()
-
 endif()
 
 if (WITH_CC_SERVER OR WITH_CC_CLIENT)
@@ -236,6 +233,11 @@ if (WITH_CC_SERVER OR WITH_CC_CLIENT)
             src/cc/ControlCommand.cpp
             src/cc/ClientStatus.cpp
             src/cc/GPUInfo.cpp)
+
+    if (WITH_ZLIB)
+        find_package(ZLIB)
+        add_definitions(/DCPPHTTPLIB_ZLIB_SUPPORT)
+    endif()
 endif()
 
 include_directories(src)
@@ -252,8 +254,12 @@ endif()
 
 add_executable(${CMAKE_PROJECT_NAME} ${HEADERS} ${SOURCES} ${SOURCES_OS} ${SOURCES_CPUID} ${HEADERS_CRYPTO} ${SOURCES_CRYPTO} ${SOURCES_SYSLOG} ${TLS_SOURCES} ${XMRIG_ASM_SOURCES} ${CN_GPU_SOURCES} ${SOURCES_CC_CLIENT} ${SOURCES_CC_COMMON})
 target_link_libraries(${CMAKE_PROJECT_NAME} ${XMRIG_ASM_LIBRARY} ${OPENSSL_LIBRARIES} ${UV_LIBRARIES} ${EXTRA_LIBS} ${CPUID_LIB} ${ARGON2_LIBRARY})
+set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES OUTPUT_NAME ${MINER_EXECUTABLE_NAME})
 
 add_executable(xmrigDaemon src/cc/XMRigd.cpp res/app.rc)
-
 set_target_properties(xmrigDaemon PROPERTIES OUTPUT_NAME ${DAEMON_EXECUTABLE_NAME})
-set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES OUTPUT_NAME ${MINER_EXECUTABLE_NAME})
+
+if (WITH_CC_SERVER)
+    add_executable(xmrigServer ${SOURCES_CC_SERVER} ${SOURCES_CC_COMMON} res/app.rc)
+    target_link_libraries(xmrigServer ${XMRIG_ASM_LIBRARY} ${OPENSSL_LIBRARIES} ${UV_LIBRARIES} ${EXTRA_LIBS} ${CPUID_LIB} ${ARGON2_LIBRARY} ${ZLIB_LIBRARIES})
+endif()

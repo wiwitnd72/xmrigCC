@@ -743,7 +743,7 @@
                 type: "POST",
                 url: "/admin/resetClientStatusList",
                 dataType: "text",
-                data: '',
+                data: '{}',
                 success: function (data) {
                     setSuccess('<strong>Successfully send the reset client status list request to the Server.</strong> - Now just wait for the next refresh.');
                 },
@@ -953,6 +953,7 @@
                 url: "/admin/deleteClientConfig?clientId=template_" + templateId,
                 type: 'POST',
                 dataType: "text",
+                data : '{}',
                 success: function (data) {
                     setSuccess('<strong>Successfully deleted template: ' + templateId + '</strong>');
                 },

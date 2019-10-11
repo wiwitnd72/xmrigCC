@@ -118,6 +118,7 @@ namespace httplib
     typedef std::multimap<std::string, MultipartFile> MultipartFiles;
 
     struct Request {
+        std::string    remoteAddr;
         std::string    version;
         std::string    method;
         std::string    target;
@@ -745,6 +746,7 @@ namespace httplib
                 case 303: return "See Other";
                 case 304: return "Not Modified";
                 case 400: return "Bad Request";
+                case 401: return "Unauthorized";
                 case 403: return "Forbidden";
                 case 404: return "Not Found";
                 case 415: return "Unsupported Media Type";
@@ -1794,6 +1796,7 @@ static WSInit wsinit_;
             connection_close = true;
         }
 
+        req.remoteAddr = strm.get_remote_addr();
         req.set_header("REMOTE_ADDR", strm.get_remote_addr().c_str());
 
         // Body
