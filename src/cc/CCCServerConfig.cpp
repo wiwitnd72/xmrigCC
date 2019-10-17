@@ -62,7 +62,7 @@ CCServerConfig::CCServerConfig(cxxopts::ParseResult& parseResult)
     m_keyFile = getParseResult(parseResult, "key-file", m_keyFile);
     m_certFile = getParseResult(parseResult, "cert-file", m_certFile);
 
-    m_colors = !getParseResult(parseResult, "no-colors", m_colors);
+    m_colors = !getParseResult(parseResult, "no-colors", !m_colors);
     m_background = getParseResult(parseResult, "background", m_background);
     m_syslog = getParseResult(parseResult, "syslog", m_syslog);
 
