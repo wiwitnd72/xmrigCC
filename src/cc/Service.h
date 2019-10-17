@@ -24,7 +24,7 @@
 #include <map>
 #include <3rdparty/cpp-httplib/httplib.h>
 
-#include "Config.h"
+#include "CCServerConfig.h"
 #include "ClientStatus.h"
 #include "ControlCommand.h"
 
@@ -45,7 +45,7 @@ constexpr static int STATUS_UPDATE_INTERVAL = 3600000;
 class Service
 {
 public:
-  explicit Service(const std::shared_ptr<Config>& config);
+  explicit Service(const std::shared_ptr<CCServerConfig>& config);
   ~Service();
 
 public:
@@ -84,7 +84,7 @@ private:
   void sendViaTelegram(const std::string& title, const std::string& message);
 
 private:
-  std::shared_ptr<Config> m_config;
+  std::shared_ptr<CCServerConfig> m_config;
 
   uint64_t m_currentServerTime;
   uint64_t m_lastStatusUpdateTime;

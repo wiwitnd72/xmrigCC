@@ -15,36 +15,16 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __HTTPD_H__
-#define __HTTPD_H__
+#ifndef XMRIGCC_SUMMARY_H
+#define XMRIGCC_SUMMARY_H
 
 #include <memory>
-#include <string>
-#include <sstream>
-#include <uv.h>
-
-#include "3rdparty/cpp-httplib/httplib.h"
-
 #include "CCServerConfig.h"
-#include "Service.h"
 
-class Httpd
+class Summary
 {
 public:
-  explicit Httpd(const std::shared_ptr<CCServerConfig>& config);
-  ~Httpd();
-
-public:
-  int start();
-  void stop();
-
-private:
-  int basicAuth(const httplib::Request& req, httplib::Response& res);
-  int bearerAuth(const httplib::Request& req, httplib::Response& res);
-
-  const std::shared_ptr<CCServerConfig> m_config;
-  std::shared_ptr<Service> m_service;
-  std::shared_ptr<httplib::Server> m_srv;
+  static void print(const std::shared_ptr<CCServerConfig>& config);
 };
 
-#endif /* __HTTPD_H__ */
+#endif /* XMRIGCC_SUMMARY_H */

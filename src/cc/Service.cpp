@@ -37,7 +37,7 @@
 #include "base/io/log/Log.h"
 #include "Service.h"
 
-Service::Service(const std::shared_ptr<Config>& config)
+Service::Service(const std::shared_ptr<CCServerConfig>& config)
   : m_config(config)
 {
 
@@ -50,8 +50,8 @@ Service::~Service()
 
 bool Service::start()
 {
-#ifndef XMRIG_NO_TLS
-  if (m_config->usePushover || m_config->useTelegram)
+#ifdef XMRIG_FEATURE_TLS
+  if (m_config->usePushover() || m_config->useTelegram())
   {
     uv_timer_init(uv_default_loop(), &m_timer);
     m_timer.data = this;
@@ -183,7 +183,7 @@ int Service::getAdminPage(httplib::Response& res)
 {
   std::stringstream data;
 
-  std::ifstream customDashboard(m_config->customDashboard);
+  std::ifstream customDashboard(m_config->customDashboard());
   if (customDashboard)
   {
     data << customDashboard.rdbuf();
@@ -254,7 +254,7 @@ int Service::setClientStatus(const httplib::Request& req, const std::string& cli
     clientStatus.parseFromJson(document);
     clientStatus.setExternalIp(req.remoteAddr);
 
-    setClientLog(m_config->clientLogHistory, clientId, clientStatus.getLog());
+    setClientLog(static_cast<size_t>(m_config->clientLogHistory()), clientId, clientStatus.getLog());
 
     clientStatus.clearLog();
 
@@ -327,9 +327,9 @@ int Service::getClientConfigTemplates(httplib::Response& res)
 {
   std::string configFolder(".");
 
-  if (!m_config->clientConfigFolder.empty())
+  if (!m_config->clientConfigFolder().empty())
   {
-    configFolder = m_config->clientConfigFolder;
+    configFolder = m_config->clientConfigFolder();
 #       ifdef WIN32
     configFolder += '\\';
 #       else
@@ -557,9 +557,9 @@ std::string Service::getClientConfigFileName(const std::string& clientId)
 {
   std::string clientConfigFileName;
 
-  if (!m_config->clientConfigFolder.empty())
+  if (!m_config->clientConfigFolder().empty())
   {
-    clientConfigFileName += m_config->clientConfigFolder;
+    clientConfigFileName += m_config->clientConfigFolder();
 #       ifdef WIN32
     clientConfigFileName += '\\';
 #       else
@@ -578,17 +578,17 @@ void Service::onPushTimer(uv_timer_t* handle)
   auto now = static_cast<uint64_t>(std::chrono::system_clock::to_time_t(time_point) * 1000);
 
   auto ctx = static_cast<Service*>(handle->data);
-  if (ctx->m_config->pushOfflineMiners)
+  if (ctx->m_config->pushOfflineMiners())
   {
     ctx->sendMinerOfflinePush(now);
   }
 
-  if (ctx->m_config->pushZeroHashrateMiners)
+  if (ctx->m_config->pushZeroHashrateMiners())
   {
     ctx->sendMinerZeroHashratePush(now);
   }
 
-  if (ctx->m_config->pushPeriodicStatus)
+  if (ctx->m_config->pushPeriodicStatus())
   {
     if (now > (ctx->m_lastStatusUpdateTime + STATUS_UPDATE_INTERVAL))
     {
@@ -726,12 +726,12 @@ void Service::sendServerStatusPush(uint64_t now)
 
 void Service::triggerPush(const std::string& title, const std::string& message)
 {
-  if (m_config->usePushover)
+  if (m_config->usePushover())
   {
     sendViaPushover(title, message);
   }
 
-  if (m_config->useTelegram)
+  if (m_config->useTelegram())
   {
     sendViaTelegram(title, message);
   }
@@ -742,8 +742,8 @@ void Service::sendViaPushover(const std::string& title, const std::string& messa
   std::shared_ptr<httplib::Client> cli = std::make_shared<httplib::SSLClient>("api.pushover.net", 443);
 
   httplib::Params params;
-  params.emplace("token", m_config->pushoverApiToken);
-  params.emplace("user", m_config->pushoverUserKey);
+  params.emplace("token", m_config->pushoverApiToken());
+  params.emplace("user", m_config->pushoverUserKey());
   params.emplace("title", title);
   params.emplace("message", httplib::detail::encode_url(message));
 
@@ -759,10 +759,10 @@ void Service::sendViaTelegram(const std::string& title, const std::string& messa
   std::shared_ptr<httplib::Client> cli = std::make_shared<httplib::SSLClient>("api.telegram.org", 443);
 
   std::string text = "<b>" + title + "</b>\n\n" + message;
-  std::string path = std::string("/bot") + m_config->telegramBotToken + std::string("/sendMessage");
+  std::string path = std::string("/bot") + m_config->telegramBotToken() + std::string("/sendMessage");
 
   httplib::Params params;
-  params.emplace("chat_id", m_config->telegramChatId);
+  params.emplace("chat_id", m_config->telegramChatId());
   params.emplace("text", httplib::detail::encode_url(text));
   params.emplace("parse_mode", "HTML");
 

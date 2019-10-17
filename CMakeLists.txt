@@ -206,15 +206,36 @@ endif()
 if (WITH_CC_SERVER)
     set(SOURCES_CC_SERVER
             src/base/io/log/backends/ConsoleLog.cpp
+            src/base/io/log/backends/SysLog.cpp
             src/base/io/log/backends/FileLog.cpp
             src/base/io/log/Log.cpp
-            #src/cc/CCServer.cpp
-            #src/cc/Summary.cpp
+            src/base/io/json/Json.cpp
+            src/base/io/json/JsonChain.cpp
+            src/base/io/Console.cpp
+            src/base/kernel/Signals.cpp
+            src/base/tools/String.cpp
+            src/cc/CCCServerConfig.cpp
+            src/cc/CCServer.cpp
+            src/cc/Summary.cpp
             src/cc/Service.cpp
             src/cc/Httpd.cpp
             src/cc/XMRigCC.cpp
             )
+
+    if (WIN32)
+        set(SOURCES_CC_SERVER
+                "${SOURCES_CC_SERVER}"
+                src/base/io/json/Json_win.cpp
+                )
+    else()
+        set(SOURCES_CC_SERVER
+                "${SOURCES_CC_SERVER}"
+                src/base/io/json/Json_unix.cpp
+                )
+    endif()
+
     add_definitions("/DXMRIG_FEATURE_CC_SERVER")
+    add_definitions("/DCXXOPTS_NO_RTTI")
 endif()
 
 if (WITH_CC_CLIENT)

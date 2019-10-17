@@ -23,7 +23,7 @@
 #include "3rdparty/base64/base64.h"
 #include "base/io/log/Log.h"
 
-#include "Config.h"
+#include "CCServerConfig.h"
 #include "Service.h"
 #include "Httpd.h"
 #include "version.h"
@@ -40,7 +40,7 @@ namespace
   }
 }
 
-Httpd::Httpd(const std::shared_ptr<Config>& config)
+Httpd::Httpd(const std::shared_ptr<CCServerConfig>& config)
   : m_config(config)
 {
 }
@@ -52,39 +52,44 @@ Httpd::~Httpd()
   m_service.reset();
 }
 
-bool Httpd::start()
+int Httpd::start()
 {
-  if (m_config->port < 1 || m_config->port > 65535)
-  {
-    return false;
-  }
-
   m_service = std::make_shared<Service>(m_config);
   m_service->start();
 
-#ifndef XMRIG_NO_TLS
-  if (m_config->useTLS)
+#ifdef XMRIG_FEATURE_TLS
+  if (m_config->useTLS())
   {
-    if (m_config->keyFile.empty() || m_config->certFile.empty())
+    if (m_config->keyFile().empty() || m_config->certFile().empty())
     {
       LOG_ERR("HTTPS Daemon failed to start. Unable to load Key/Cert.");
       return false;
     }
 
-    m_srv = std::make_shared<httplib::SSLServer>(m_config->certFile.c_str(), m_config->keyFile.c_str());
+    m_srv = std::make_shared<httplib::SSLServer>(m_config->certFile().c_str(), m_config->keyFile().c_str());
   }
   else
   {
 #endif
     m_srv = std::make_shared<httplib::Server>();
-#ifndef XMRIG_NO_TLS
+#ifdef XMRIG_FEATURE_TLS
   }
 #endif
 
+  if (!m_srv->is_valid())
+  {
+    return -1;
+  }
+
+  xmrig::Log::print(GREEN_BOLD(" * ") WHITE_BOLD("%-13s") CSI "1;%dm%s:%d",
+                    "LISTENING",
+                    (m_config->useTLS() ? 32 : 36),
+                    m_config->bindIp().c_str(),
+                    m_config->port()
+  );
+
   m_srv->Get(R"(/.*)", [this](const httplib::Request& req, httplib::Response& res)
   {
-    //LOG_INFO("[%s] GET %s", req.remoteAddr.c_str(), req.path.c_str());
-
     int status;
 
     if (req.path.find("/client/") == 0)
@@ -108,8 +113,6 @@ bool Httpd::start()
 
   m_srv->Post(R"(/.*)", [this](const httplib::Request& req, httplib::Response& res)
   {
-    //LOG_INFO("[%s] POST %s", req.remoteAddr.c_str(), req.path.c_str());
-
     int status;
     if (req.path.find("/client/") == 0)
     {
@@ -130,15 +133,7 @@ bool Httpd::start()
     addResponseHeader(res);
   });
 
-  LOG_INFO("%s Server starting on Port: %d %s", APP_NAME, m_config->port, m_config->useTLS ? "with TLS" : "without TLS");
-
-  if (m_srv->listen(m_config->bindIp.c_str(), m_config->port))
-  {
-    LOG_ERR("HTTP Daemon failed to start.");
-    return false;
-  }
-
-  return true;
+  return m_srv->listen(m_config->bindIp().c_str(), m_config->port()) ? 0 : 1;
 }
 
 void Httpd::stop()
@@ -153,7 +148,7 @@ int Httpd::basicAuth(const httplib::Request& req, httplib::Response& res)
 {
   int result = HTTP_UNAUTHORIZED;
 
-  if (m_config->adminUser.empty() || m_config->adminPass.empty())
+  if (m_config->adminUser().empty() || m_config->adminPass().empty())
   {
     res.set_content(std::string("<html><body\\>"
                                 "Please configure admin user and pass to view this Page."
@@ -166,7 +161,7 @@ int Httpd::basicAuth(const httplib::Request& req, httplib::Response& res)
   {
     auto authHeader = req.get_header_value("Authorization");
     auto credentials =
-      std::string("Basic ") + Base64::Encode(m_config->adminUser + std::string(":") + m_config->adminPass);
+      std::string("Basic ") + Base64::Encode(m_config->adminUser() + std::string(":") + m_config->adminPass());
 
     if (!authHeader.empty() && credentials == authHeader)
     {
@@ -191,7 +186,7 @@ int Httpd::bearerAuth(const httplib::Request& req, httplib::Response& res)
 {
   int result = HTTP_UNAUTHORIZED;
 
-  if (m_config->token.empty())
+  if (m_config->token().empty())
   {
     LOG_WARN("[%s] 200 OK - WARNING AccessToken not set!", req.remoteAddr.c_str());
     result = HTTP_OK;
@@ -199,7 +194,7 @@ int Httpd::bearerAuth(const httplib::Request& req, httplib::Response& res)
   else
   {
     auto authHeader = req.get_header_value("Authorization");
-    auto credentials = std::string("Bearer ") + m_config->token;
+    auto credentials = std::string("Bearer ") + m_config->token();
 
     if (!authHeader.empty() && credentials == authHeader)
     {
