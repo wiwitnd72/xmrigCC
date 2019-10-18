@@ -60,8 +60,7 @@ public:
   inline int clientLogHistory() const             { return m_clientLogHistory; }
 
   inline bool isValid() const                     { return !m_bindIp.empty() &&
-                                                            m_port > 0 && m_port < 65535 && !m_adminUser.empty() &&
-                                                           !m_adminPass.empty() && !m_token.empty(); }
+                                                            m_port > 0 && m_port < 65535; }
 
 private:
   bool m_colors = true;

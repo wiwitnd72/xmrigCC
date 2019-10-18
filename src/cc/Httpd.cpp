@@ -47,9 +47,7 @@ Httpd::Httpd(const std::shared_ptr<CCServerConfig>& config)
 
 Httpd::~Httpd()
 {
-  m_srv->stop();
-  m_srv.reset();
-  m_service.reset();
+  stop();
 }
 
 int Httpd::start()
@@ -167,7 +165,7 @@ int Httpd::basicAuth(const httplib::Request& req, httplib::Response& res)
     {
       result = HTTP_OK;
     }
-    else if (!authHeader.empty())
+    else if (authHeader.empty())
     {
       LOG_WARN("[%s] 401 UNAUTHORIZED", req.remoteAddr.c_str());
     }
