@@ -15,6 +15,7 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <uv.h>
 #include <memory>
 
 #include "base/io/log/backends/ConsoleLog.h"
@@ -80,6 +81,8 @@ int CCServer::start()
 
   Summary::print(m_config);
 
+  startUvLoopThread();
+
   m_httpd = std::make_shared<Httpd>(m_config);
   int retVal = m_httpd->start();
   if (retVal > 0)
@@ -98,6 +101,15 @@ int CCServer::start()
   }
 
   return retVal;
+}
+
+void CCServer::startUvLoopThread() const
+{
+  std::thread([]()
+              {
+                uv_run(uv_default_loop(), UV_RUN_DEFAULT);
+                uv_loop_close(uv_default_loop());
+              }).detach();
 }
 
 void CCServer::onConsoleCommand(char command)

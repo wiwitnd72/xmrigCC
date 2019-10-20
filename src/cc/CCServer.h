@@ -49,6 +49,8 @@ private:
   std::shared_ptr<xmrig::Signals> m_signals;
   std::shared_ptr<CCServerConfig> m_config;
   std::shared_ptr<Httpd> m_httpd;
+
+  void startUvLoopThread() const;
 };
 
 
