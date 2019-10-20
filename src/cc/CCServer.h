@@ -19,7 +19,6 @@
 #define __CC_SERVER_H__
 
 #include <memory>
-#include <uv.h>
 #include <cxxopts/cxxopts.hpp>
 
 #include "base/kernel/interfaces/IConsoleListener.h"
@@ -50,8 +49,6 @@ private:
   std::shared_ptr<xmrig::Signals> m_signals;
   std::shared_ptr<CCServerConfig> m_config;
   std::shared_ptr<Httpd> m_httpd;
-
-  void startUvLoopThread() const;
 };
 
 

@@ -24,6 +24,8 @@
 
 #ifdef WIN32
 #include "win_dirent.h"
+#else
+#include <dirent.h>
 #endif
 
 #include <3rdparty/rapidjson/document.h>
@@ -33,8 +35,8 @@
 #include <3rdparty/rapidjson/filereadstream.h>
 #include <3rdparty/rapidjson/error/en.h>
 #include <3rdparty/rapidjson/prettywriter.h>
-#include <version.h>
 #include "base/io/log/Log.h"
+#include "version.h"
 #include "Service.h"
 
 Service::Service(const std::shared_ptr<CCServerConfig>& config)
@@ -53,12 +55,32 @@ bool Service::start()
 #ifdef XMRIG_FEATURE_TLS
   if (m_config->usePushover() || m_config->useTelegram())
   {
-    uv_timer_init(uv_default_loop(), &m_timer);
-    m_timer.data = this;
+    m_timer = std::make_shared<Timer>([&]()
+    {
+      auto time_point = std::chrono::system_clock::now();
+      auto now = static_cast<uint64_t>(std::chrono::system_clock::to_time_t(time_point) * 1000);
 
-    uv_timer_start(&m_timer, onPushTimer,
-                   static_cast<uint64_t>(TIMER_INTERVAL),
-                   static_cast<uint64_t>(TIMER_INTERVAL));
+      if (m_config->pushOfflineMiners())
+      {
+        sendMinerOfflinePush(now);
+      }
+
+      if (m_config->pushZeroHashrateMiners())
+      {
+        sendMinerZeroHashratePush(now);
+      }
+
+      if (m_config->pushPeriodicStatus())
+      {
+        if (now > (m_lastStatusUpdateTime + STATUS_UPDATE_INTERVAL))
+        {
+          sendServerStatusPush(now);
+          m_lastStatusUpdateTime = now;
+        }
+      }
+    }, TIMER_INTERVAL);
+
+    m_timer->start();
   }
 #endif
 
@@ -67,9 +89,9 @@ bool Service::start()
 
 void Service::stop()
 {
-  uv_timer_stop(&m_timer);
-
   std::lock_guard<std::mutex> lock(m_mutex);
+
+  m_timer->stop();
 
   m_clientCommand.clear();
   m_clientStatus.clear();
@@ -570,32 +592,6 @@ std::string Service::getClientConfigFileName(const std::string& clientId)
   clientConfigFileName += clientId + std::string("_config.json");
 
   return clientConfigFileName;
-}
-
-void Service::onPushTimer(uv_timer_t* handle)
-{
-  auto time_point = std::chrono::system_clock::now();
-  auto now = static_cast<uint64_t>(std::chrono::system_clock::to_time_t(time_point) * 1000);
-
-  auto ctx = static_cast<Service*>(handle->data);
-  if (ctx->m_config->pushOfflineMiners())
-  {
-    ctx->sendMinerOfflinePush(now);
-  }
-
-  if (ctx->m_config->pushZeroHashrateMiners())
-  {
-    ctx->sendMinerZeroHashratePush(now);
-  }
-
-  if (ctx->m_config->pushPeriodicStatus())
-  {
-    if (now > (ctx->m_lastStatusUpdateTime + STATUS_UPDATE_INTERVAL))
-    {
-      ctx->sendServerStatusPush(now);
-      ctx->m_lastStatusUpdateTime = now;
-    }
-  }
 }
 
 void Service::sendMinerOfflinePush(uint64_t now)

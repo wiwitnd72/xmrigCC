@@ -20,13 +20,13 @@
 
 #include <memory>
 #include <string>
-#include <uv.h>
 #include <map>
 #include <3rdparty/cpp-httplib/httplib.h>
 
 #include "CCServerConfig.h"
 #include "ClientStatus.h"
 #include "ControlCommand.h"
+#include "Timer.h"
 
 constexpr static char CONTENT_TYPE_HTML[] = "text/html";
 constexpr static char CONTENT_TYPE_JSON[] = "application/json";
@@ -56,8 +56,6 @@ public:
   int handlePOST(const httplib::Request& req, httplib::Response& res);
 
 private:
-  static void onPushTimer(uv_timer_t* handle);
-
   int getAdminPage(httplib::Response& res);
 
   int getClientStatusList(httplib::Response& res);
@@ -85,9 +83,10 @@ private:
 
 private:
   std::shared_ptr<CCServerConfig> m_config;
+  std::shared_ptr<Timer> m_timer;
 
-  uint64_t m_currentServerTime;
-  uint64_t m_lastStatusUpdateTime;
+  uint64_t m_currentServerTime = 0;
+  uint64_t m_lastStatusUpdateTime = 0;
 
   std::map<std::string, ClientStatus> m_clientStatus;
   std::map<std::string, ControlCommand> m_clientCommand;
@@ -97,7 +96,6 @@ private:
   std::list<std::string> m_zeroHashNotified;
 
   std::mutex m_mutex;
-  uv_timer_t m_timer;
 };
 
 #endif /* __SERVICE_H__ */

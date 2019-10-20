@@ -21,7 +21,6 @@
 #include <memory>
 #include <string>
 #include <sstream>
-#include <uv.h>
 
 #include "3rdparty/cpp-httplib/httplib.h"
 

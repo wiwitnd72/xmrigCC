@@ -15,7 +15,6 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 #include <string>
-#include <uv.h>
 
 #ifdef XMRIG_FEATURE_TLS
 #   include <openssl/opensslv.h>
@@ -49,8 +48,6 @@ static void printVersions()
   libs += buf;
 }
 #endif
-
-  xmrig::Log::print(GREEN_BOLD(" * ") WHITE_BOLD("%-13slibuv/%s %s"), "LIBS", uv_version_string(), libs.c_str());
 }
 
 static void printCommands()

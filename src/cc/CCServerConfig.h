@@ -27,7 +27,7 @@
 class CCServerConfig
 {
 public:
-    explicit CCServerConfig(cxxopts::ParseResult& parseResult);
+  explicit CCServerConfig(cxxopts::ParseResult& parseResult);
 
 public:
   bool read(const xmrig::IJsonReader &reader);
