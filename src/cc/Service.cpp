@@ -100,8 +100,6 @@ void Service::stop()
 
 int Service::handleGET(const httplib::Request& req, httplib::Response& res)
 {
-  std::lock_guard<std::mutex> lock(m_mutex);
-
   int resultCode = HTTP_NOT_FOUND;
 
   std::string clientId = req.get_param_value("clientId");
