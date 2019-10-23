@@ -208,7 +208,6 @@ endif()
 if (WITH_CC_SERVER)
     set(SOURCES_CC_SERVER
             src/base/io/log/backends/ConsoleLog.cpp
-            src/base/io/log/backends/SysLog.cpp
             src/base/io/log/backends/FileLog.cpp
             src/base/io/log/Log.cpp
             src/base/io/json/Json.cpp
@@ -288,6 +287,6 @@ add_executable(xmrigDaemon src/cc/XMRigd.cpp res/app.rc)
 set_target_properties(xmrigDaemon PROPERTIES OUTPUT_NAME ${DAEMON_EXECUTABLE_NAME})
 
 if (WITH_CC_SERVER)
-    add_executable(xmrigServer ${SOURCES_CC_SERVER} ${SOURCES_CC_COMMON} res/app.rc)
+    add_executable(xmrigServer ${SOURCES_CC_SERVER} ${SOURCES_CC_COMMON} ${SOURCES_SYSLOG} res/app.rc)
     target_link_libraries(xmrigServer ${XMRIG_ASM_LIBRARY} ${OPENSSL_LIBRARIES} ${UV_LIBRARIES} ${EXTRA_LIBS} ${CPUID_LIB} ${ARGON2_LIBRARY} ${ZLIB_LIBRARIES})
 endif()

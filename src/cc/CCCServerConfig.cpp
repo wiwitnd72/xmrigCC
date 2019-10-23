@@ -71,10 +71,10 @@ CCServerConfig::CCServerConfig(cxxopts::ParseResult& parseResult)
     m_clientConfigFolder = getParseResult(parseResult, "client-config-folder", m_clientConfigFolder);
     m_logFile = getParseResult(parseResult, "log-file", m_logFile);
 
-    m_pushoverApiToken = getParseResult(parseResult, "pushover-api-token", m_pushoverApiToken.c_str());
-    m_pushoverUserKey = getParseResult(parseResult, "pushover-user-key", m_pushoverUserKey.c_str());
-    m_telegramBotToken = getParseResult(parseResult, "telegram-bot-token", m_telegramBotToken.c_str());
-    m_telegramChatId = getParseResult(parseResult, "telegram-chat-id", m_telegramChatId.c_str());
+    m_pushoverApiToken = getParseResult(parseResult, "pushover-api-token", m_pushoverApiToken);
+    m_pushoverUserKey = getParseResult(parseResult, "pushover-user-key", m_pushoverUserKey);
+    m_telegramBotToken = getParseResult(parseResult, "telegram-bot-token", m_telegramBotToken);
+    m_telegramChatId = getParseResult(parseResult, "telegram-chat-id", m_telegramChatId);
     m_pushOfflineMiners = getParseResult(parseResult, "push-miner-offline-info", m_pushOfflineMiners);
     m_pushZeroHashrateMiners = getParseResult(parseResult, "push-miner-zero-hash-info", m_pushZeroHashrateMiners);
     m_pushPeriodicStatus = getParseResult(parseResult, "push-periodic-mining-status", m_pushPeriodicStatus);
