@@ -159,8 +159,7 @@ int Httpd::basicAuth(const httplib::Request& req, httplib::Response& res)
   else
   {
     auto authHeader = req.get_header_value("Authorization");
-    auto credentials =
-      std::string("Basic ") + Base64::Encode(m_config->adminUser() + std::string(":") + m_config->adminPass());
+    auto credentials = std::string("Basic ") + Base64::Encode(m_config->adminUser() + std::string(":") + m_config->adminPass());
 
     if (!authHeader.empty() && credentials == authHeader)
     {
@@ -199,14 +198,14 @@ int Httpd::bearerAuth(const httplib::Request& req, httplib::Response& res)
     {
       result = HTTP_OK;
     }
-    else if (!authHeader.empty())
+    else if (authHeader.empty())
     {
-      LOG_ERR("[%s] 403 FORBIDDEN - AccessToken wrong!", req.remoteAddr.c_str());
-      result = HTTP_FORBIDDEN;
+      LOG_WARN("[%s] 401 UNAUTHORIZED", req.remoteAddr.c_str());
     }
     else
     {
-      LOG_WARN("[%s] 401 UNAUTHORIZED", req.remoteAddr.c_str());
+      LOG_ERR("[%s] 403 FORBIDDEN - AccessToken wrong!", req.remoteAddr.c_str());
+      result = HTTP_FORBIDDEN;
     }
   }
 

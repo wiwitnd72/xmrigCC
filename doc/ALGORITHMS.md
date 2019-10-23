@@ -38,8 +38,8 @@ Option `coin` useful for pools without algorithm negotiation support or daemon t
 | `cn-lite/0` | 1 MB | <1.9.5+ | CryptoNight-Lite variant 0. |
 | `cn/0` | 2 MB | <1.9.5+ | CryptoNight (original). |
 
-## Migration to v3
-Since version 3 mining [algorithm](#algorithm-names) should specified for each pool separately (`algo` option), earlier versions was use one global `algo` option and per pool `variant` option (this option was removed in v3). If your pool support [mining algorithm negotiation](https://github.com/xmrig/xmrig-proxy/issues/168) you may not specify this option at all.
+## Migration to v2
+Since version 2 mining [algorithm](#algorithm-names) should specified for each pool separately (`algo` option), earlier versions was use one global `algo` option and per pool `variant` option (this option was removed in v3). If your pool support [mining algorithm negotiation](https://github.com/xmrig/xmrig-proxy/issues/168) you may not specify this option at all.
  
 #### Example
 ```json
