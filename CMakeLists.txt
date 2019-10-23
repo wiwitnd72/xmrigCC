@@ -87,6 +87,7 @@ set(HEADERS_CRYPTO
     src/crypto/cn/skein_port.h
     src/crypto/cn/soft_aes.h
     src/crypto/common/Algorithm.h
+    src/crypto/common/Coin.h
     src/crypto/common/keccak.h
     src/crypto/common/Nonce.h
     src/crypto/common/portable/mm_malloc.h
@@ -124,6 +125,7 @@ set(SOURCES_CRYPTO
     src/crypto/cn/CnCtx.cpp
     src/crypto/cn/CnHash.cpp
     src/crypto/common/Algorithm.cpp
+    src/crypto/common/Coin.cpp
     src/crypto/common/keccak.cpp
     src/crypto/common/Nonce.cpp
     src/crypto/common/VirtualMemory.cpp
@@ -236,12 +238,17 @@ if (WITH_CC_SERVER)
 
     add_definitions("/DXMRIG_FEATURE_CC_SERVER")
     add_definitions("/DCXXOPTS_NO_RTTI")
+
+    if (WITH_TLS)
+        add_definitions(/DCPPHTTPLIB_OPENSSL_SUPPORT)
+    endif()
 endif()
 
 if (WITH_CC_CLIENT)
     set(SOURCES_CC_CLIENT
             src/cc/CCClientConfig.cpp
-            src/cc/CCClient.cpp)
+            src/cc/CCClient.cpp
+            src/base/io/log/backends/RemoteLog.cpp)
     add_definitions("/DXMRIG_FEATURE_CC_CLIENT")
 
     if (WITH_TLS)
@@ -273,9 +280,9 @@ if (WITH_DEBUG_LOG)
     add_definitions(/DAPP_DEBUG)
 endif()
 
-add_executable(${CMAKE_PROJECT_NAME} ${HEADERS} ${SOURCES} ${SOURCES_OS} ${SOURCES_CPUID} ${HEADERS_CRYPTO} ${SOURCES_CRYPTO} ${SOURCES_SYSLOG} ${TLS_SOURCES} ${XMRIG_ASM_SOURCES} ${CN_GPU_SOURCES} ${SOURCES_CC_CLIENT} ${SOURCES_CC_COMMON})
-target_link_libraries(${CMAKE_PROJECT_NAME} ${XMRIG_ASM_LIBRARY} ${OPENSSL_LIBRARIES} ${UV_LIBRARIES} ${EXTRA_LIBS} ${CPUID_LIB} ${ARGON2_LIBRARY})
-set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES OUTPUT_NAME ${MINER_EXECUTABLE_NAME})
+add_executable(xmrigMiner ${HEADERS} ${SOURCES} ${SOURCES_OS} ${SOURCES_CPUID} ${HEADERS_CRYPTO} ${SOURCES_CRYPTO} ${SOURCES_SYSLOG} ${TLS_SOURCES} ${XMRIG_ASM_SOURCES} ${CN_GPU_SOURCES} ${SOURCES_CC_CLIENT} ${SOURCES_CC_COMMON})
+target_link_libraries(xmrigMiner ${XMRIG_ASM_LIBRARY} ${OPENSSL_LIBRARIES} ${UV_LIBRARIES} ${EXTRA_LIBS} ${CPUID_LIB} ${ARGON2_LIBRARY})
+set_target_properties(xmrigMiner PROPERTIES OUTPUT_NAME ${MINER_EXECUTABLE_NAME})
 
 add_executable(xmrigDaemon src/cc/XMRigd.cpp res/app.rc)
 set_target_properties(xmrigDaemon PROPERTIES OUTPUT_NAME ${DAEMON_EXECUTABLE_NAME})

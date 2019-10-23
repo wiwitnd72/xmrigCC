@@ -35,6 +35,7 @@
 #include <3rdparty/rapidjson/filereadstream.h>
 #include <3rdparty/rapidjson/error/en.h>
 #include <3rdparty/rapidjson/prettywriter.h>
+#include <3rdparty/cpp-httplib/httplib.h>
 #include "base/io/log/Log.h"
 #include "version.h"
 #include "Service.h"

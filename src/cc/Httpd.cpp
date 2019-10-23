@@ -19,8 +19,9 @@
 #include <sstream>
 #include <fstream>
 #include <memory>
+#include <3rdparty/cpp-httplib/httplib.h>
+#include <3rdparty/base64/base64.h>
 
-#include "3rdparty/base64/base64.h"
 #include "base/io/log/Log.h"
 
 #include "CCServerConfig.h"
