@@ -29,6 +29,7 @@ Full Windows/Linux compatible, and you can mix Linux and Windows miner on one XM
 ## Additional features of XMRigCC (on top of XMRig)
 
 Check the [Coin Configuration](https://github.com/Bendr0id/xmrigCC/wiki/Coin-configurations) guide
+* **Support of RandomxARQ variant (algo: "rx/arq")**
 * **Support of UPX2 variant (algo: "cn-extremelite/upx2")**
 * **Support of CN-Conceal variant (algo: "cn/conceal")**
 * **Better performance for ARMv8 CPUs**
