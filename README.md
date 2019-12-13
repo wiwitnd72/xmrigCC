@@ -153,6 +153,7 @@ xmrigDaemon -o pool.hashvault.pro:5555 -u YOUR_WALLET -p x -k --cc-url=IP_OF_CC_
   -R, --retry-pause=N               time to pause between retries (default: 5)
       --cpu-affinity                set process affinity to CPU core(s), mask 0x3 for cores 0 and 1
       --cpu-priority                set process priority (0 idle, 2 normal to 5 highest)
+      --cpu-max-threads-hint=N      maximum CPU threads count (in percentage) hint for autoconfig
       --no-huge-pages               disable huge pages support
       --no-color                    disable colored output
       --donate-level=N              donate level, default 5% (5 minutes in 100 minutes)
