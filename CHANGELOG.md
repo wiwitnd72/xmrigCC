@@ -1,3 +1,8 @@
+# 2.2.2
+* Added CPU max threads option (`--cpu-max-threads-hint` or in `config.json`) #288
+* Changed Dashboard ordering/sorting to be more usable #289
+* Fixed CC support for old Windows variants (XP, 2003, 7 without SP1) - unable to performRequest POST #279
+* Fixed autoconfig/autosave for rx/loki
 # 2.2.1
 * Integrated RandomSFX algo (rx/sfx)
 * Performance improvements for RandomX variants
