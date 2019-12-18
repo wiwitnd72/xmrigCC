@@ -48,14 +48,15 @@
         }
     ],
     "cc-client": {
-        "enabled" : true,
+        "enabled": true,
         "url": "localhost:3344",
-        "use-tls" : false,
         "access-token": "mySecret",
+        "use-tls": false,
+        "use-remote-logging": true,
+        "upload-config-on-start": true,
         "worker-id": null,
-        "update-interval-s": 10,
-        "use-remote-logging" : true,
-        "upload-config-on-start" : true
+        "reboot-cmd": null,
+        "update-interval-s": 10
     },
     "print-time": 60,
     "retries": 5,
