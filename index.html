@@ -527,6 +527,20 @@
                 table.draw();
             });
 
+            $('#groupByAlgo').change(function () {
+                if ($('#groupByAlgo').prop('checked')) {
+                    table.rowGroup().enable().draw();
+                    table.order.fixed( {
+                        pre: [ 5, 'asc' ]
+                    } ).draw();
+                } else {
+                    table.rowGroup().disable().draw();
+                    table.order.fixed( {
+                        pre: []
+                    } ).draw();
+                }
+            });
+
             $('#resetClientStatusList').click(function () {
                 resetClientStatusList();
             });
@@ -961,6 +975,8 @@
                       data-onstyle="success" data-offstyle="danger"/><span>Hide offline miners</span></label>
         <label><input id="showOfflineNotification" type="checkbox" checked data-toggle="toggle" data-size="mini"
                       data-onstyle="success" data-offstyle="danger"/><span>Notify when miner went offline</span></label>
+        <label><input id="groupByAlgo" type="checkbox" checked data-toggle="toggle" data-size="mini"
+                      data-onstyle="success" data-offstyle="danger"/><span>Group by Algo</span></label>
         <br/>
         <button id="resetClientStatusList" type="button" class="btn btn-danger fa fa-trash-o"> Reset ClientStatusList
         </button>
