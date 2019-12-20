@@ -68,6 +68,7 @@ static const char *kRxWOW = "rx/wow";
 static const char *kRxLOKI = "rx/loki";
 static const char *kRxARQ = "rx/arq";
 static const char *kRxSFX = "rx/sfx";
+static const char *kRxV = "rx/v";
 #endif
 
 #ifdef XMRIG_ALGO_ARGON2
@@ -207,6 +208,7 @@ void xmrig::CpuConfig::generate(uint32_t limit)
     m_threads.move(kRxLOKI, cpu->threads(Algorithm::RX_LOKI, limit));
     m_threads.move(kRxARQ, cpu->threads(Algorithm::RX_ARQ, limit));
     m_threads.move(kRxSFX, cpu->threads(Algorithm::RX_SFX, limit));
+    m_threads.move(kRxV, cpu->threads(Algorithm::RX_V, limit));
 #   endif
 
     generateArgon2(limit);

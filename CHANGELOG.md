@@ -1,3 +1,5 @@
+# 2.2.3
+* Integrated RandomV algo (rx/v)
 # 2.2.2
 * Added CPU max threads option (`--cpu-max-threads-hint` or in `config.json`) #288
 * Changed Dashboard group ordering/sorting to be more natural #289
@@ -8,7 +10,7 @@
 * Performance improvements for RandomX variants
 * Fixed some cc connection problems
 # 2.2.0
-* Integrated RandomxARQ algo (rx/arq)
+* Integrated RandomARQ algo (rx/arq)
 * Dashboard:
     * Flipped push/pull button on Dashboard
     * Only update algo+pool when its not donating

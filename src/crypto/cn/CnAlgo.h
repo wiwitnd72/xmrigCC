@@ -184,6 +184,7 @@ private:
         0,             // RX_LOKI
         0,             // RX_ARQ
         0,             // RX_SFX
+        0,             // RX_V
 #       endif
 #       ifdef XMRIG_ALGO_ARGON2
         0,             // AR2_CHUKWA
@@ -229,6 +230,7 @@ private:
         0,             // RX_LOKI
         0,             // RX_ARQ
         0,             // RX_SFX
+        0,             // RX_V
 #       endif
 #       ifdef XMRIG_ALGO_ARGON2
         0,             // AR2_CHUKWA
@@ -274,6 +276,7 @@ private:
         Algorithm::INVALID, // RX_LOKI
         Algorithm::INVALID, // RX_ARQ
         Algorithm::INVALID, // RX_SFX
+        Algorithm::INVALID, // RX_V
 #       endif
 #       ifdef XMRIG_ALGO_ARGON2
         Algorithm::INVALID, // AR2_CHUKWA
