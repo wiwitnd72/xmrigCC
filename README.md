@@ -234,6 +234,6 @@ BTC:  `1P7ujsXeX7GxQwHNnJsRMgAdNkFZmNVqJT`
 
 ## Contact
 * ben [at] graef.in
-* Telegram: @BenDr0id
+* [Telegram] (https://telegram.me/bendr0id)
 * [discord](https://discord.gg/r3rCKTB)
 * [reddit](https://www.reddit.com/user/BenDr0id/)
