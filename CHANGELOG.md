@@ -1,3 +1,5 @@
+# 2.5.1
+* Fixed #298 Miner hangs on restart command
 # 2.5.0
 * Removed outdated algo CryptonightWOW (`cn/wow`)
 * Huge hashrate improvements on RandomX based Algos (Thx to @xmrig and @SChernykh)
