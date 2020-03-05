@@ -134,13 +134,9 @@ size_t inline generate<Algorithm::RANDOM_X>(Threads<CpuThreads> &threads, uint32
         count += threads.move("rx/wow", std::move(wow));
     }
 
-    if (!threads.isExist(Algorithm::RX_KEVA)) {
-        auto keva = Cpu::info()->threads(Algorithm::RX_KEVA, limit);
-        count += threads.move("rx/keva", std::move(keva));
-    }
-
     count += generate("rx", threads, Algorithm::RX_0, limit);
     count += generate("rx/loki", threads, Algorithm::RX_0, limit);
+    count += generate("rx/keva", threads, Algorithm::RX_KEVA, limit);
 
     return count;
 }
@@ -155,6 +151,14 @@ size_t inline generate<Algorithm::ARGON2>(Threads<CpuThreads> &threads, uint32_t
 }
 #endif
 
+
+#ifdef XMRIG_ALGO_ASTROBWT
+template<>
+size_t inline generate<Algorithm::ASTROBWT>(Threads<CpuThreads>& threads, uint32_t limit)
+{
+    return generate("astrobwt", threads, Algorithm::ASTROBWT_DERO, limit);
+}
+#endif
 
 } /* namespace xmrig */
 

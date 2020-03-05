@@ -28,7 +28,7 @@ Full Windows/Linux compatible, and you can mix Linux and Windows miner on one XM
 
 ## Additional features of XMRigCC (on top of XMRig)
 
-Check the [Coin Configuration](https://github.com/Bendr0id/xmrigCC/wiki/Coin-configurations) guide
+* **Support of AstroBWT variant (algo: "astrobwt")**
 * **Support of RandomKEVA variant (algo: "rx/keva")**
 * **Support of CN-Talleo variant (algo: "cn-pico/tlo")**
 * **Support of RandomSFX variant (algo: "rx/sfx")**

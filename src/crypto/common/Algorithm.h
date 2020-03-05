@@ -74,6 +74,7 @@ public:
         RX_KEVA,       // "rx/keva"          RandomKV (Keva).
         AR2_CHUKWA,    // "argon2/chukwa"    Argon2id (Chukwa).
         AR2_WRKZ,      // "argon2/wrkz"      Argon2id (WRKZ)
+        ASTROBWT_DERO, // "astrobwt/dero"    AstroBWT (Dero)
         MAX
     };
 
@@ -85,7 +86,8 @@ public:
         CN_PICO,
         CN_EXTREMELITE,
         RANDOM_X,
-        ARGON2
+        ARGON2,
+        ASTROBWT
     };
 
     inline Algorithm() = default;

@@ -41,6 +41,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "crypto/randomx/jit_compiler_a64_static.hpp"
 #endif
 
+#include "backend/cpu/Cpu.h"
+
 #include <cassert>
 
 RandomX_ConfigurationWownero::RandomX_ConfigurationWownero()
@@ -99,9 +101,9 @@ RandomX_ConfigurationSafex::RandomX_ConfigurationSafex()
 
 RandomX_ConfigurationKeva::RandomX_ConfigurationKeva()
 {
-	ArgonSalt = "RandomKV\x01";
-	ScratchpadL2_Size = 131072;
-	ScratchpadL3_Size = 1048576;
+    ArgonSalt = "RandomKV\x01";
+    ScratchpadL2_Size = 131072;
+    ScratchpadL3_Size = 1048576;
 }
 
 RandomX_ConfigurationBase::RandomX_ConfigurationBase()
@@ -242,14 +244,29 @@ void RandomX_ConfigurationBase::Apply()
 	CEIL_##x = CEIL_##prev + RANDOMX_FREQ_##x; \
 	for (; k < CEIL_##x; ++k) { JIT_HANDLE(x, prev); }
 
+#define INST_HANDLE2(x, func_name, prev) \
+	CEIL_##x = CEIL_##prev + RANDOMX_FREQ_##x; \
+	for (; k < CEIL_##x; ++k) { JIT_HANDLE(func_name, prev); }
+
 	INST_HANDLE(IADD_RS, NULL);
 	INST_HANDLE(IADD_M, IADD_RS);
 	INST_HANDLE(ISUB_R, IADD_M);
 	INST_HANDLE(ISUB_M, ISUB_R);
 	INST_HANDLE(IMUL_R, ISUB_M);
 	INST_HANDLE(IMUL_M, IMUL_R);
-	INST_HANDLE(IMULH_R, IMUL_M);
-	INST_HANDLE(IMULH_M, IMULH_R);
+
+#if defined(_M_X64) || defined(__x86_64__)
+	if (xmrig::Cpu::info()->hasBMI2()) {
+		INST_HANDLE2(IMULH_R, IMULH_R_BMI2, IMUL_M);
+		INST_HANDLE2(IMULH_M, IMULH_M_BMI2, IMULH_R);
+	}
+	else
+#endif
+	{
+		INST_HANDLE(IMULH_R, IMUL_M);
+		INST_HANDLE(IMULH_M, IMULH_R);
+	}
+
 	INST_HANDLE(ISMULH_R, IMULH_M);
 	INST_HANDLE(ISMULH_M, ISMULH_R);
 	INST_HANDLE(IMUL_RCP, ISMULH_M);
@@ -269,7 +286,17 @@ void RandomX_ConfigurationBase::Apply()
 	INST_HANDLE(FDIV_M, FMUL_R);
 	INST_HANDLE(FSQRT_R, FDIV_M);
 	INST_HANDLE(CBRANCH, FSQRT_R);
-	INST_HANDLE(CFROUND, CBRANCH);
+
+#if defined(_M_X64) || defined(__x86_64__)
+	if (xmrig::Cpu::info()->hasBMI2()) {
+		INST_HANDLE2(CFROUND, CFROUND_BMI2, CBRANCH);
+	}
+	else
+#endif
+	{
+		INST_HANDLE(CFROUND, CBRANCH);
+	}
+
 	INST_HANDLE(ISTORE, CFROUND);
 	INST_HANDLE(NOP, ISTORE);
 #undef INST_HANDLE
@@ -282,7 +309,7 @@ RandomX_ConfigurationArqma RandomX_ArqmaConfig;
 RandomX_ConfigurationSafex RandomX_SafexConfig;
 RandomX_ConfigurationKeva RandomX_KevaConfig;
 
-RandomX_ConfigurationBase RandomX_CurrentConfig;
+alignas(64) RandomX_ConfigurationBase RandomX_CurrentConfig;
 
 extern "C" {
 

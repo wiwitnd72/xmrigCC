@@ -41,18 +41,9 @@
 #include "net/Network.h"
 #include "Summary.h"
 
-xmrig::App::App(Process *process) :
-    m_console(nullptr),
-    m_signals(nullptr)
+xmrig::App::App(Process *process)
 {
     m_controller = new Controller(process);
-    if (m_controller->init() != 0) {
-        return;
-    }
-
-    if (!m_controller->config()->isBackground()) {
-        m_console = new Console(this);
-    }
 }
 
 
@@ -69,12 +60,34 @@ xmrig::App::~App()
 int xmrig::App::exec()
 {
     if (!m_controller->isReady()) {
+        LOG_EMERG("no valid configuration found.");
+
         return 2;
     }
 
+#   ifdef XMRIG_FEATURE_CC_CLIENT
+    if (!m_controller->config()->isDaemonized()) {
+        LOG_EMERG(APP_ID " is compiled with CC support, please start the daemon instead.\n");
+
+        return 2;
+    }
+#   endif
+
     m_signals = new Signals(this);
 
-    background();
+    int rc = 0;
+    if (background(rc)) {
+        return rc;
+    }
+
+    rc = m_controller->init();
+    if (rc != 0) {
+        return rc;
+    }
+
+    if (!m_controller->isBackground()) {
+        m_console = new Console(this);
+    }
 
     Summary::print(m_controller);
 
@@ -90,10 +103,10 @@ int xmrig::App::exec()
     m_controller->ccClient()->addCommandListener(this);
 #   endif
 
-    const int r = uv_run(uv_default_loop(), UV_RUN_DEFAULT);
+    rc = uv_run(uv_default_loop(), UV_RUN_DEFAULT);
     uv_loop_close(uv_default_loop());
 
-    return m_restart ? EINTR : r;
+    return m_restart ? EINTR : rc;
 }
 
 

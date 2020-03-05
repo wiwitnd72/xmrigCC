@@ -21,6 +21,7 @@
 #include <3rdparty/rapidjson/stringbuffer.h>
 #include <3rdparty/rapidjson/prettywriter.h>
 #include <crypto/common/VirtualMemory.h>
+#include <base/kernel/Env.h>
 
 #include "backend/cpu/Cpu.h"
 #include "base/tools/Timer.h"
@@ -129,10 +130,7 @@ void xmrig::CCClient::updateClientInfo()
   }
   else
   {
-    char hostname[128];
-    memset(hostname, 0, sizeof(hostname));
-    gethostname(hostname, sizeof(hostname) - 1);
-    clientId = std::string(hostname);
+    clientId = Env::hostname();
   }
 
   auto cpuInfo = xmrig::Cpu::info();

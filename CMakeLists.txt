@@ -17,6 +17,7 @@ option(WITH_CN_PICO         "Enable CryptoNight-Pico algorithm" ON)
 option(WITH_CN_GPU          "Enable CryptoNight-GPU algorithm" OFF)
 option(WITH_RANDOMX         "Enable RandomX algorithms family" ON)
 option(WITH_ARGON2          "Enable Argon2 algorithms family" ON)
+option(WITH_ASTROBWT        "Enable AstroBWT algorithms family" ON)
 option(WITH_HTTP            "Enable HTTP protocol support (client/server)" ON)
 option(WITH_CN_EXTREMELITE  "CryptoNight-Extremelite support" ON)
 option(WITH_DEBUG_LOG       "Enable debug log output" OFF)
@@ -66,7 +67,6 @@ set(HEADERS
     src/net/JobResult.h
     src/net/JobResults.h
     src/net/Network.h
-    src/net/NetworkState.h
     src/net/strategies/DonateStrategy.h
     src/Summary.h
     src/version.h
@@ -115,7 +115,6 @@ set(SOURCES
     src/core/Miner.cpp
     src/net/JobResults.cpp
     src/net/Network.cpp
-    src/net/NetworkState.cpp
     src/net/strategies/DonateStrategy.cpp
     src/Summary.cpp
     src/xmrig.cpp
@@ -199,6 +198,7 @@ find_package(UV REQUIRED)
 include(cmake/flags.cmake)
 include(cmake/randomx.cmake)
 include(cmake/argon2.cmake)
+include(cmake/astrobwt.cmake)
 include(cmake/OpenSSL.cmake)
 include(cmake/asm.cmake)
 include(cmake/cn-gpu.cmake)
@@ -231,10 +231,12 @@ if (WITH_CC_SERVER)
     set(SOURCES_CC_SERVER
             src/base/io/log/backends/ConsoleLog.cpp
             src/base/io/log/backends/FileLog.cpp
+            src/base/io/log/FileLogWriter.cpp
             src/base/io/log/Log.cpp
             src/base/io/json/Json.cpp
             src/base/io/json/JsonChain.cpp
             src/base/io/Console.cpp
+            src/base/kernel/Env.cpp
             src/base/kernel/Signals.cpp
             src/base/tools/String.cpp
             src/cc/CCCServerConfig.cpp

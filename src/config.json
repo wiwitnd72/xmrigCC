@@ -11,7 +11,6 @@
         "restricted": true
     },
     "autosave": true,
-    "version": 1,
     "background": false,
     "colors": true,
     "randomx": {
@@ -27,13 +26,16 @@
         "huge-pages": true,
         "hw-aes": null,
         "priority": null,
-        "asm": true,
+        "memory-pool": false,
+        "yield": true,
         "max-threads-hint": 100,
+        "asm": true,
         "argon2-impl": null,
         "cn/0": false,
         "cn-lite/0": false
     },
     "donate-level": 5,
+    "donate-over-proxy": 1,
     "log-file": null,
     "pools": [
         {
@@ -48,7 +50,9 @@
             "enabled": true,
             "tls": false,
             "tls-fingerprint": null,
-            "daemon": false
+            "daemon": false,
+            "socks5": null,
+            "self-select": null
         }
     ],
     "cc-client": {
@@ -63,9 +67,11 @@
         "update-interval-s": 10
     },
     "print-time": 60,
+    "health-print-time": 60,
     "retries": 5,
     "retry-pause": 5,
     "syslog": false,
     "user-agent": null,
+    "verbose": 0,
     "watch": true
 }

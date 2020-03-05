@@ -26,6 +26,7 @@
 #ifndef XMRIG_APP_H
 #define XMRIG_APP_H
 
+#include <base/tools/Object.h>
 #include "base/kernel/interfaces/IConsoleListener.h"
 #include "base/kernel/interfaces/ISignalListener.h"
 #include "base/cc/interfaces/ICommandListener.h"
@@ -47,6 +48,8 @@ class Signals;
 class App : public IConsoleListener, public ISignalListener, public ICommandListener
 {
 public:
+     XMRIG_DISABLE_COPY_MOVE_DEFAULT(App)
+
     App(Process *process);
     ~App() override;
 
@@ -58,7 +61,7 @@ protected:
     void onCommandReceived(ControlCommand::Command command) override;
 
 private:
-    void background();
+    bool background(int &rc);
     void close(bool restart);
 
 #   ifdef XMRIG_FEATURE_CC_CLIENT
@@ -67,9 +70,9 @@ private:
 
     bool m_restart = false;
 
-    Console *m_console;
-    Controller *m_controller;
-    Signals *m_signals;
+    Console *m_console       = nullptr;
+    Controller *m_controller = nullptr;
+    Signals *m_signals       = nullptr;
 };
 
 

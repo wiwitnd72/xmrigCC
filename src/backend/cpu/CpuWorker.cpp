@@ -6,8 +6,8 @@
  * Copyright 2016      Jay D Dee   <jayddee246@gmail.com>
  * Copyright 2017-2018 XMR-Stak    <https://github.com/fireice-uk>, <https://github.com/psychocrypt>
  * Copyright 2018      Lee Clagett <https://github.com/vtnerd>
- * Copyright 2018-2019 SChernykh   <https://github.com/SChernykh>
- * Copyright 2016-2019 XMRig       <https://github.com/xmrig>, <support@xmrig.com>
+ * Copyright 2018-2020 SChernykh   <https://github.com/SChernykh>
+ * Copyright 2016-2020 XMRig       <https://github.com/xmrig>, <support@xmrig.com>
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -44,9 +44,28 @@
 #endif
 
 
+#ifdef XMRIG_ALGO_ASTROBWT
+#   include "crypto/astrobwt/AstroBWT.h"
+#endif
+
+
 namespace xmrig {
 
 static constexpr uint32_t kReserveCount = 32768;
+
+
+template<size_t N>
+inline bool nextRound(WorkerJob<N> &job)
+{
+    if (!job.nextRound(kReserveCount, 1)) {
+        JobResults::done(job.currentJob());
+
+        return false;
+    }
+
+    return true;
+}
+
 
 } // namespace xmrig
 
@@ -171,6 +190,12 @@ bool xmrig::CpuWorker<N>::selfTest()
     }
 #   endif
 
+#   ifdef XMRIG_ALGO_ASTROBWT
+    if (m_algorithm.family() == Algorithm::ASTROBWT) {
+        return verify(Algorithm::ASTROBWT_DERO, astrobwt_dero_test_out);
+    }
+#   endif
+
     return false;
 }
 
@@ -226,14 +251,20 @@ void xmrig::CpuWorker<N>::start()
                     first = false;
                     randomx_calculate_hash_first(m_vm->get(), tempHash, m_job.blob(), job.size());
                 }
-                m_job.nextRound(kReserveCount, 1);
+
+                if (!nextRound(m_job)) {
+                    break;
+                }
+
                 randomx_calculate_hash_next(m_vm->get(), tempHash, m_job.blob(), job.size(), m_hash);
             }
             else
 #           endif
             {
                 fn(job.algorithm())(m_job.blob(), job.size(), m_hash, m_ctx, job.height());
-                m_job.nextRound(kReserveCount, 1);
+                if (!nextRound(m_job)) {
+                    break;
+                };
             }
 
             for (size_t i = 0; i < N; ++i) {

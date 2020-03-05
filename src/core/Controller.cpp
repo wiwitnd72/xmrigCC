@@ -23,14 +23,16 @@
  */
 
 
-#include <assert.h>
-
 #include "core/Controller.h"
 #include "backend/cpu/Cpu.h"
 #include "core/config/Config.h"
 #include "core/Miner.h"
 #include "crypto/common/VirtualMemory.h"
 #include "net/Network.h"
+
+
+#include <cassert>
+
 
 xmrig::Controller::Controller(Process *process) :
     Base(process)
@@ -46,24 +48,14 @@ xmrig::Controller::~Controller()
 }
 
 
-bool xmrig::Controller::isReady() const
-{
-    return Base::isReady() && m_network;
-}
-
-
 int xmrig::Controller::init()
 {
-    Cpu::init();
-
-    const int rc = Base::init();
-    if (rc != 0) {
-        return rc;
-    }
+    Base::init();
 
     VirtualMemory::init(config()->cpu().memPoolSize(), config()->cpu().isHugePages());
 
     m_network = new Network(this);
+
     return 0;
 }
 

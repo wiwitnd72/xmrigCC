@@ -139,6 +139,10 @@ static AlgoName const algorithm_names[] = {
     { "ar2/256",                   nullptr,            Algorithm::AR2_WRKZ        },
     { "ar2-256",                   nullptr,            Algorithm::AR2_WRKZ        },
 #   endif
+#   ifdef XMRIG_ALGO_ASTROBWT
+    { "astrobwt",                  nullptr,            Algorithm::ASTROBWT_DERO   },
+    { "astrobwt/dero",             nullptr,            Algorithm::ASTROBWT_DERO   },
+#   endif
 };
 
 
@@ -212,6 +216,7 @@ size_t xmrig::Algorithm::l3() const
     }
 #   endif
 
+
 #   ifdef XMRIG_ALGO_ARGON2
     if (f == ARGON2) {
         switch (m_id) {
@@ -227,6 +232,20 @@ size_t xmrig::Algorithm::l3() const
     }
 #   endif
 
+
+#   ifdef XMRIG_ALGO_ASTROBWT
+    if (f == ASTROBWT) {
+        switch (m_id) {
+            case ASTROBWT_DERO:
+                return oneMiB * 20;
+
+            default:
+                break;
+        }
+    }
+#   endif
+
+
     return 0;
 }
 
@@ -241,6 +260,12 @@ uint32_t xmrig::Algorithm::maxIntensity() const
 
 #   ifdef XMRIG_ALGO_ARGON2
     if (family() == ARGON2) {
+        return 1;
+    }
+#   endif
+
+#   ifdef XMRIG_ALGO_ASTROBWT
+    if (family() == ASTROBWT) {
         return 1;
     }
 #   endif
@@ -313,6 +338,11 @@ xmrig::Algorithm::Family xmrig::Algorithm::family(Id id)
     case AR2_CHUKWA:
     case AR2_WRKZ:
         return ARGON2;
+#   endif
+
+#   ifdef XMRIG_ALGO_ASTROBWT
+    case ASTROBWT_DERO:
+        return ASTROBWT;
 #   endif
 
     default:
