@@ -1,3 +1,5 @@
+# 2.6.2
+* Fixed auto CPU configuration for cn-extremelite (upx2)
 # 2.6.1
 * Integrated RandomKEVA algo (`rx/keva`) or coin (`keva` for autoswitch) for upcoming Kevacoin fork
 * Fixed #298 Miner hangs on restart command
