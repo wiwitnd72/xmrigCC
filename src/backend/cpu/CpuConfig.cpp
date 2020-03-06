@@ -28,27 +28,33 @@
 #include "backend/cpu/Cpu.h"
 #include "base/io/json/Json.h"
 #include "rapidjson/document.h"
+#include <algorithm>
 
 
 namespace xmrig {
 
-static const char *kEnabled             = "enabled";
-static const char *kHugePages           = "huge-pages";
-static const char *kHwAes               = "hw-aes";
-static const char *kMaxThreadsHint      = "max-threads-hint";
-static const char *kMemoryPool          = "memory-pool";
-static const char *kPriority            = "priority";
-static const char *kYield               = "yield";
+  static const char *kEnabled             = "enabled";
+  static const char *kHugePages           = "huge-pages";
+  static const char *kHwAes               = "hw-aes";
+  static const char *kMaxThreadsHint      = "max-threads-hint";
+  static const char *kMemoryPool          = "memory-pool";
+  static const char *kPriority            = "priority";
+  static const char *kYield               = "yield";
 
 #ifdef XMRIG_FEATURE_ASM
-static const char *kAsm = "asm";
+  static const char *kAsm = "asm";
 #endif
 
 #ifdef XMRIG_ALGO_ARGON2
-static const char *kArgon2Impl = "argon2-impl";
+  static const char *kArgon2Impl = "argon2-impl";
 #endif
 
-extern template class Threads<CpuThreads>;
+#ifdef XMRIG_ALGO_ASTROBWT
+  static const char* kAstroBWTMaxSize = "astrobwt-max-size";
+#endif
+
+
+  extern template class Threads<CpuThreads>;
 
 }
 
@@ -83,6 +89,10 @@ rapidjson::Value xmrig::CpuConfig::toJSON(rapidjson::Document &doc) const
 
 #   ifdef XMRIG_ALGO_ARGON2
     obj.AddMember(StringRef(kArgon2Impl), m_argon2Impl.toJSON(), allocator);
+#   endif
+
+#   ifdef XMRIG_ALGO_ASTROBWT
+    obj.AddMember(StringRef(kAstroBWTMaxSize), m_astrobwtMaxSize, allocator);
 #   endif
 
     m_threads.toJSON(obj, doc);
@@ -136,6 +146,16 @@ void xmrig::CpuConfig::read(const rapidjson::Value &value)
         m_argon2Impl = Json::getString(value, kArgon2Impl);
 #       endif
 
+#       ifdef XMRIG_ALGO_ASTROBWT
+        const auto& obj = Json::getValue(value, kAstroBWTMaxSize);
+        if (obj.IsNull() || !obj.IsInt()) {
+            m_shouldSave = true;
+        }
+        else {
+            m_astrobwtMaxSize = std::min(std::max(obj.GetInt(), 400), 1200);
+        }
+#       endif
+
         m_threads.read(value);
 
         generate();
@@ -163,12 +183,11 @@ void xmrig::CpuConfig::generate()
     count += xmrig::generate<Algorithm::CN_LITE>(m_threads, m_limit);
     count += xmrig::generate<Algorithm::CN_HEAVY>(m_threads, m_limit);
     count += xmrig::generate<Algorithm::CN_PICO>(m_threads, m_limit);
-    count += xmrig::generate<Algorithm::CN_EXTREMELITE>(m_threads, m_limit);
     count += xmrig::generate<Algorithm::RANDOM_X>(m_threads, m_limit);
     count += xmrig::generate<Algorithm::ARGON2>(m_threads, m_limit);
     count += xmrig::generate<Algorithm::ASTROBWT>(m_threads, m_limit);
 
-    m_shouldSave = count > 0;
+    m_shouldSave |= count > 0;
 }
 
 

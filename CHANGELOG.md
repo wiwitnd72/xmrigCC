@@ -1,7 +1,7 @@
-# 2.6.0
+# 2.6.1
 * Integrated RandomKEVA algo (`rx/keva`) or coin (`keva` for autoswitch) for upcoming Kevacoin fork
 * Fixed #298 Miner hangs on restart command
-    * Upstream changes highlights (Thx to @xmrig and @SChernykh)
+    * Merged upstream **v5.8.2** highlights (Thx to @xmrig and @SChernykh) 
         * Integrated AstroBWT algo (`astrobwt`) or coin (`dero` for autoswitch) for upcoming DERO fork
         * RandomX hashrate improvements
         * Added SOCKS5 proxies support for Tor or other tunnels
