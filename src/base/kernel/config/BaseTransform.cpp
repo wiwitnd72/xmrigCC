@@ -199,6 +199,7 @@ void xmrig::BaseTransform::transform(rapidjson::Document &doc, int key, const ch
     case IConfig::UserAgentKey: /* --user-agent */
         return set(doc, BaseConfig::kUserAgent, arg);
 
+#   ifdef XMRIG_FEATURE_CC_CLIENT
     case IConfig::CCRebootCmd: /* --cc-reboot-cmd */
         return set(doc, BaseConfig::kCCClient, CCClientConfig::kRebootCmd, arg);
 
@@ -210,6 +211,7 @@ void xmrig::BaseTransform::transform(rapidjson::Document &doc, int key, const ch
 
     case IConfig::CCWorkerId: /* --cc-worker-id */
         return set(doc, BaseConfig::kCCClient, CCClientConfig::kWorkerId, arg);
+#   endif
 
     case IConfig::RetriesKey:     /* --retries */
     case IConfig::RetryPauseKey:  /* --retry-pause */
@@ -291,6 +293,7 @@ void xmrig::BaseTransform::transformBoolean(rapidjson::Document &doc, int key, b
     case IConfig::CCDaemonizedKey: /* --daemonized */
         return set(doc, BaseConfig::kDaemonized, enable);
 
+#ifdef XMRIG_FEATURE_CC_CLIENT
     case IConfig::CCEnabledKey: /* --cc-disabled */
         return set(doc, BaseConfig::kCCClient, CCClientConfig::kEnabled, enable);
 
@@ -302,6 +305,7 @@ void xmrig::BaseTransform::transformBoolean(rapidjson::Document &doc, int key, b
 
     case IConfig::CCUseTLS:   /* --cc-use-tls */
         return set(doc, BaseConfig::kCCClient, CCClientConfig::kUseTLS, enable);
+#endif
 
     default:
         break;
@@ -335,9 +339,10 @@ void xmrig::BaseTransform::transformUint64(rapidjson::Document &doc, int key, ui
     case IConfig::DaemonPollKey:  /* --daemon-poll-interval */
         return add(doc, Pools::kPools, Pool::kDaemonPollInterval, arg);
 #   endif
+#   ifdef XMRIG_FEATURE_CC_CLIENT
     case IConfig::CCUpdateInterval:  /* --cc-update-interval-s */
         return add(doc, BaseConfig::kCCClient, CCClientConfig::kUpdateInterval, "update-interval-s", arg);
-
+#   endif
     default:
         break;
     }
