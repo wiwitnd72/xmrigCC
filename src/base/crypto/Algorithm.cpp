@@ -24,7 +24,7 @@
  */
 
 
-#include "crypto/common/Algorithm.h"
+#include "Algorithm.h"
 
 
 #include "crypto/cn/CnAlgo.h"

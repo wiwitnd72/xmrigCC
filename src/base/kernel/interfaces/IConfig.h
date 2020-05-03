@@ -26,7 +26,7 @@
 #define XMRIG_ICONFIG_H
 
 
-#include "crypto/common/Algorithm.h"
+#include "base/crypto/Algorithm.h"
 #include "rapidjson/fwd.h"
 
 
@@ -97,6 +97,8 @@ public:
         CPUMaxThreadsKey     = 1026,
         MemoryPoolKey        = 1027,
         YieldKey             = 1030,
+        AstroBWTMaxSizeKey   = 1034,
+        AstroBWTAVX2Key      = 1036,
 
         // xmrig amd
         OclPlatformKey       = 1400,

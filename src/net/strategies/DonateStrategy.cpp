@@ -38,7 +38,7 @@
 #include "core/config/Config.h"
 #include "core/Controller.h"
 #include "core/Miner.h"
-#include "crypto/common/keccak.h"
+#include "base/crypto/keccak.h"
 #include "net/Network.h"
 #include "net/strategies/DonateStrategy.h"
 #include "rapidjson/document.h"

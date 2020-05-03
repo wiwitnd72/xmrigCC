@@ -42,7 +42,7 @@
 #include "base/net/tools/RecvBuf.h"
 #include "base/net/tools/Storage.h"
 #include "base/tools/Object.h"
-#include "crypto/common/Algorithm.h"
+#include "base/crypto/Algorithm.h"
 
 
 using BIO = struct bio_st;

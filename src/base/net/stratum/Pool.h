@@ -32,7 +32,7 @@
 
 
 #include "base/net/stratum/ProxyUrl.h"
-#include "crypto/common/Coin.h"
+#include "base/crypto/Coin.h"
 #include "rapidjson/fwd.h"
 
 

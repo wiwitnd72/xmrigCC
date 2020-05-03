@@ -94,6 +94,11 @@ namespace xmrig {
         u += "      --randomx-no-rdmsr        disable reverting initial MSR values on exit\n";
 #   endif
 
+#   ifdef XMRIG_ALGO_ASTROBWT
+        u += "      --astrobwt-max-size=N     skip hashes with large stage 2 size, default: 550, min: 400, max: 1200\n";
+        u += "      --astrobwt-avx2           enable AVX2 optimizations for AstroBWT algorithm";
+#   endif
+
 #   ifdef XMRIG_FEATURE_HTTP
         u += "\nAPI:\n";
         u += "      --api-worker-id=ID        custom worker-id for API\n";

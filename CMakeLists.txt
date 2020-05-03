@@ -88,10 +88,10 @@ set(HEADERS_CRYPTO
     src/crypto/cn/hash.h
     src/crypto/cn/skein_port.h
     src/crypto/cn/soft_aes.h
-    src/crypto/common/Algorithm.h
-    src/crypto/common/Coin.h
+    src/base/crypto/Algorithm.h
+    src/base/crypto/Coin.h
+    src/base/crypto/keccak.h
     src/crypto/common/HugePagesInfo.h
-    src/crypto/common/keccak.h
     src/crypto/common/MemoryPool.h
     src/crypto/common/Nonce.h
     src/crypto/common/portable/mm_malloc.h
@@ -127,14 +127,14 @@ set(SOURCES_CRYPTO
     src/crypto/cn/c_skein.c
     src/crypto/cn/CnCtx.cpp
     src/crypto/cn/CnHash.cpp
-    src/crypto/common/Algorithm.cpp
-    src/crypto/common/Coin.cpp
+    src/base/crypto/Algorithm.cpp
+    src/base/crypto/Coin.cpp
+    src/base/crypto/keccak.cpp
     src/crypto/common/HugePagesInfo.cpp
-    src/crypto/common/keccak.cpp
     src/crypto/common/MemoryPool.cpp
     src/crypto/common/Nonce.cpp
     src/crypto/common/VirtualMemory.cpp
-    src/crypto/common/Algorithm.cpp
+        src/base/crypto/Algorithm.cpp
    )
 
 if (WITH_HWLOC)
