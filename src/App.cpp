@@ -204,6 +204,8 @@ void xmrig::App::close(bool restart)
     }
 
     Log::destroy();
+    
+    uv_stop(uv_default_loop());
 }
 
 #   ifdef XMRIG_FEATURE_CC_CLIENT
