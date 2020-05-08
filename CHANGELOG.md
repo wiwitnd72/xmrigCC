@@ -1,3 +1,13 @@
+# 2.6.5
+* Added Miner/Hashrate statistics (graphs) of the last 24h to the Dashboard
+* Embedded image resources in the Dashboard for faster loading
+* Fixed possible freeze on remote stop/restart command
+* Merged upstream **v.5.11.1** changes (Thx to @xmrig and @SChernykh)
+    * Only acquire MSR registers on RX algos
+    * Hashrate improvement on some CPUS for RX algos
+    * Pooled memory allocations of RandomX VMs (speedup on Zen2)
+    * RandomX JIT refactoring
+    * AVX2 optimized code for AstroBWT
 # 2.6.2
 * Fixed auto CPU configuration for cn-extremelite (upx2)
 # 2.6.1
