@@ -1011,6 +1011,14 @@
 	      				datasets: hashrateDatasets
 	      			},
 	      			options: {
+      				    title:{
+  							display:true,
+  							text:'Hashrates'
+					    },
+					    tooltips: {
+					      mode: 'nearest',
+					      intersect: false,
+					    },
 						scales: { 
 						   yAxes: [
 						   	{
@@ -1069,7 +1077,15 @@
 	      				datasets: minerDatasets
 	      			},
 					options: {
-						scales: { 
+        				title:{
+  							display:true,
+  							text:'Miners'
+					    },
+					    tooltips: {
+					      mode: 'nearest',
+					      intersect: false,
+					    },
+					    scales: { 
 						   yAxes: [
 						   {
 						      id: 'miner',
@@ -1109,7 +1125,7 @@
 			            	}
 			            },
 						responsive: true,
-			    		maintainAspectRatio: false
+						maintainAspectRatio: false
 			    	},      			
 	      			plugins: {
 	      				colorschemes: {
