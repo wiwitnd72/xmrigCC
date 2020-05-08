@@ -97,9 +97,14 @@
 
     <script src="https://use.fontawesome.com/6b3cdfc597.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+    <script src="https://unpkg.com/chartjs-plugin-colorschemes"></script>
+	
     <script type="text/javascript">
         var TRESHOLD_IN_MS = 60 * 1000;
         var RELOAD_INTERVAL_IN_MS = 10 * 1000;
+        var CHART_RELOAD_INTERVAL_IN_MS = 60 * 1000;
 
         var latestRelease = "";
         var currentServerTime = 0;
@@ -133,8 +138,8 @@
             }
         );
 
-        $(document).ready(function () {
-            var table = $('#clientStatusList').DataTable({
+        $(document).ready(function () {	  			
+	  			var table = $('#clientStatusList').DataTable({
                 dom: "<'row'<'col-sm-9'B><'col-sm-3'f>><'row'<'col-sm-12't>><'row'<'col-sm-4'i><'col-sm-8'<'#serverTime'>>>",
                 stateSave: true,
                 bPaginate: false,
@@ -235,7 +240,7 @@
                         }
                     },
                     {
-                        text: '<i class="fa fa-play"> Start miner</i>',
+                        text: '<i class="fa fa-play"> Start</i>',
                         className: 'btn-success',
                         enabled: false,
                         action: function () {
@@ -248,7 +253,7 @@
                         }
                     },
                     {
-                        text: '<i class="fa fa-pause"> Pause miner</i>',
+                        text: '<i class="fa fa-pause"> Pause</i>',
                         className: 'btn-warning',
                         enabled: false,
                         action: function () {
@@ -261,7 +266,7 @@
                         }
                     },
                     {
-                        text: '<i class="fa fa-repeat"> Restart miner</i>',
+                        text: '<i class="fa fa-repeat"> Restart</i>',
                         className: 'btn-info',
                         enabled: false,
                         action: function () {
@@ -274,20 +279,7 @@
                         }
                     },
                     {
-                        text: '<i class="fa fa-refresh"> Reebot machine</i>',
-                        className: 'btn-warning',
-                        enabled: false,
-                        action: function () {
-                            table.rows({selected: true}).eq(0).each(function (index) {
-                                var row = table.row(index);
-                                var data = row.data();
-
-                                sendAction("REBOOT", data.client_status.client_id);
-                            });
-                        }
-                    },
-                    {
-                        text: '<i class="fa fa-sign-out"> Stop miner</i>',
+                        text: '<i class="fa fa-sign-out"> Stop</i>',
                         className: 'btn-danger',
                         enabled: false,
                         action: function () {
@@ -296,6 +288,19 @@
                                 var data = row.data();
 
                                 sendAction("SHUTDOWN", data.client_status.client_id);
+                            });
+                        }
+                    },
+                    {
+                        text: '<i class="fa fa-refresh"> Reebot</i>',
+                        className: 'btn-warning',
+                        enabled: false,
+                        action: function () {
+                            table.rows({selected: true}).eq(0).each(function (index) {
+                                var row = table.row(index);
+                                var data = row.data();
+
+                                sendAction("REBOOT", data.client_status.client_id);
                             });
                         }
                     },
@@ -713,9 +718,15 @@
                 }
             });
 
+			drawChart();
+
             setInterval(function () {
                 table.ajax.reload();
             }, RELOAD_INTERVAL_IN_MS);
+
+		    setInterval(function () {
+                drawChart();
+            }, CHART_RELOAD_INTERVAL_IN_MS);
         });
 
         function sendAction(action, clientId) {
@@ -942,7 +953,7 @@
         }
 
         function deleteTemplateConfig(templateId) {
-            $.ajax({
+            $.ajax(	{
                 url: "/admin/deleteClientConfig?clientId=template_" + templateId,
                 type: 'POST',
                 dataType: "text",
@@ -955,12 +966,160 @@
                 }
             });
         }
-    </script>
+
+		function drawChart() {
+
+		  $.ajax({
+		    url: '/admin/getClientStatistics',
+		    dataType: 'json',
+		  }).done(function (results) {
+
+		  	var algos = results["client_statistics"].map(function(e) {
+			   return e.algo;
+			});
+			
+			var statistics = results["client_statistics"].map(function(e) {
+			   return e.statistics;
+			});
+		  
+		  	var hashrateDatasets=[], minerDatasets=[];
+			for(var j = 0; j < results["client_statistics"].length; j++) {
+				var hashrates = statistics[j].map(function(e) {
+					return {
+						x: new Date(e.timestamp),
+						y: e.hashrate
+					}
+				});
+
+				var miners = statistics[j].map(function(e) {
+					return {
+						x: new Date(e.timestamp),
+						y: e.miner
+					}
+				});
+
+				hashrateDatasets.push({label: algos[j], type: 'line', data: hashrates, spanGraphs: true, fill: true});
+  				minerDatasets.push({label: algos[j], type: 'line', data: miners, spanGraphs: true, fill: false});
+			}
+
+    		var hashrateChart = document.getElementById("hashrateChart").getContext("2d");
+			new Chart(hashrateChart, {
+      			type: "line",
+      			data: {
+      				datasets: hashrateDatasets
+      			},
+      			options: {
+					scales: { 
+					   yAxes: [
+					   	{
+					   	  id: 'hashrate',
+					   	  position: 'left',
+		        		  scalePositionLeft: true,
+					   	  stacked: false,
+					      ticks: {
+					             beginAtZero: true
+				          },
+					      scaleLabel: {
+					             display: true,
+					             labelString: 'Hashrate',
+					             fontSize: 16
+					      }
+					    }
+					  ],
+					  xAxes: [{
+					   	  type: 'time',
+					   	  distribution: 'series',
+					   	  time: {
+		        			unit: 'minute',
+		        			displayFormats: {
+		           				minute: 'HH:mm'
+		        		  	}
+		        		  },
+		        		  ticks: {
+		        		  	stepSize: 10,
+		        		  	autoSkip: true,
+		        			maxTicksLimit: 60
+		        		  }
+					    }]
+					  },
+					  elements: {
+		                point:{
+		        		    radius: 2
+		              	}
+		              },
+					  responsive: true,
+		    		  maintainAspectRatio: false
+		    	},
+      			plugins: {
+      				colorschemes: {
+    					scheme: 'brewer.Paired12'
+  					}		
+      			}
+			});
+
+			var minerChart = document.getElementById("minerChart").getContext("2d");
+			new Chart(minerChart, {
+      			type: "line",
+      			data: {
+      				datasets: minerDatasets
+      			},
+				options: {
+					scales: { 
+					   yAxes: [
+					   {
+					      id: 'miner',
+					      position: 'left',
+		        	      scalePositionLeft: true,
+					      stacked: false,
+					      ticks: {
+					             beginAtZero: true,
+					             callback: function(value) {if (value % 1 === 0) {return value;}}
+					           },
+					      scaleLabel: {
+					             display: true,
+					             labelString: 'Miner',
+					             fontSize: 16
+					           }
+					    }
+					  ],
+					  xAxes: [{
+					   	  type: 'time',
+					   	  distribution: 'series',
+					   	  time: {
+		        			unit: 'minute',
+		        			displayFormats: {
+		           				minute: 'HH:mm'
+		        		  	}
+		        		  },
+		        		  ticks: {
+		        		  	stepSize: 10,
+		        		  	autoSkip: true,
+		        			maxTicksLimit: 60
+		        		  }
+					    }]
+					},
+					elements: {
+		            	point:{
+		        		    radius: 2
+		            	}
+		            },
+					responsive: true,
+		    		maintainAspectRatio: false
+		    	},      			
+      			plugins: {
+      				colorschemes: {
+    					scheme: 'brewer.Paired12'
+  					}		
+      			}
+			});
+		});
+	}
+</script>
 
 </head>
-<body>
+<body>   
 <br/>
-<div style="width: 95%; margin:0 auto;">
+<div style="width: 96%; margin:0 auto;">
     <div id="updateNotificationBar"></div>
     <div id="notificationBar"></div>
     <div id="statusBar"></div>
@@ -1063,6 +1222,13 @@
     </table>
 
     <br/>
+
+    <div style="height: 30vh; margin:0 auto;">
+        <canvas id="hashrateChart"></canvas>
+        <br/><br/>
+        <canvas id="minerChart"></canvas>
+	</div>
+	
     <div class="modal fade" id="minerEditor" role="dialog">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
