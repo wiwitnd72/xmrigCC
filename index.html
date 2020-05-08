@@ -292,7 +292,7 @@
                         }
                     },
                     {
-                        text: '<i class="fa fa-refresh"> Reebot</i>',
+                        text: '<i class="fa fa-refresh"> Reboot</i>',
                         className: 'btn-warning',
                         enabled: false,
                         action: function () {
@@ -1002,116 +1002,122 @@
   				minerDatasets.push({label: algos[j], type: 'line', data: miners, spanGraphs: true, fill: false});
 			}
 
-    		var hashrateChart = document.getElementById("hashrateChart").getContext("2d");
-			new Chart(hashrateChart, {
-      			type: "line",
-      			data: {
-      				datasets: hashrateDatasets
-      			},
-      			options: {
-					scales: { 
-					   yAxes: [
-					   	{
-					   	  id: 'hashrate',
-					   	  position: 'left',
-		        		  scalePositionLeft: true,
-					   	  stacked: false,
-					      ticks: {
-					             beginAtZero: true
-				          },
-					      scaleLabel: {
-					             display: true,
-					             labelString: 'Hashrate',
-					             fontSize: 16
-					      }
-					    }
-					  ],
-					  xAxes: [{
-					   	  type: 'time',
-					   	  distribution: 'series',
-					   	  time: {
-		        			unit: 'minute',
-		        			displayFormats: {
-		           				minute: 'HH:mm'
-		        		  	}
-		        		  },
-		        		  ticks: {
-		        		  	stepSize: 10,
-		        		  	autoSkip: true,
-		        			maxTicksLimit: 60
-		        		  }
-					    }]
-					  },
-					  elements: {
-		                point:{
-		        		    radius: 2
-		              	}
-		              },
-					  responsive: true,
-		    		  maintainAspectRatio: false
-		    	},
-      			plugins: {
-      				colorschemes: {
-    					scheme: 'brewer.Paired12'
-  					}		
-      			}
-			});
+			if (hashrateDatasets.length > 0)
+			{
+	    		var hashrateChart = document.getElementById("hashrateChart").getContext("2d");
+				new Chart(hashrateChart, {
+	      			type: "line",
+	      			data: {
+	      				datasets: hashrateDatasets
+	      			},
+	      			options: {
+						scales: { 
+						   yAxes: [
+						   	{
+						   	  id: 'hashrate',
+						   	  position: 'left',
+			        		  scalePositionLeft: true,
+						   	  stacked: false,
+						      ticks: {
+						             beginAtZero: true
+					          },
+						      scaleLabel: {
+						             display: true,
+						             labelString: 'Hashrate',
+						             fontSize: 16
+						      }
+						    }
+						  ],
+						  xAxes: [{
+						   	  type: 'time',
+						   	  distribution: 'series',
+						   	  time: {
+			        			unit: 'minute',
+			        			displayFormats: {
+			           				minute: 'HH:mm'
+			        		  	}
+			        		  },
+			        		  ticks: {
+			        		  	stepSize: 10,
+			        		  	autoSkip: true,
+			        			maxTicksLimit: 60
+			        		  }
+						    }]
+						  },
+						  elements: {
+			                point:{
+			        		    radius: 2
+			              	}
+			              },
+						  responsive: true,
+			    		  maintainAspectRatio: false
+			    	},
+	      			plugins: {
+	      				colorschemes: {
+	    					scheme: 'brewer.Paired12'
+	  					}		
+	      			}
+				});
+			}
 
-			var minerChart = document.getElementById("minerChart").getContext("2d");
-			new Chart(minerChart, {
-      			type: "line",
-      			data: {
-      				datasets: minerDatasets
-      			},
-				options: {
-					scales: { 
-					   yAxes: [
-					   {
-					      id: 'miner',
-					      position: 'left',
-		        	      scalePositionLeft: true,
-					      stacked: false,
-					      ticks: {
-					             beginAtZero: true,
-					             callback: function(value) {if (value % 1 === 0) {return value;}}
-					           },
-					      scaleLabel: {
-					             display: true,
-					             labelString: 'Miner',
-					             fontSize: 16
-					           }
-					    }
-					  ],
-					  xAxes: [{
-					   	  type: 'time',
-					   	  distribution: 'series',
-					   	  time: {
-		        			unit: 'minute',
-		        			displayFormats: {
-		           				minute: 'HH:mm'
-		        		  	}
-		        		  },
-		        		  ticks: {
-		        		  	stepSize: 10,
-		        		  	autoSkip: true,
-		        			maxTicksLimit: 60
-		        		  }
-					    }]
-					},
-					elements: {
-		            	point:{
-		        		    radius: 2
-		            	}
-		            },
-					responsive: true,
-		    		maintainAspectRatio: false
-		    	},      			
-      			plugins: {
-      				colorschemes: {
-    					scheme: 'brewer.Paired12'
-  					}		
-      			}
-			});
+			if (minerDatasets.length > 0)
+			{
+				var minerChart = document.getElementById("minerChart").getContext("2d");
+				new Chart(minerChart, {
+	      			type: "line",
+	      			data: {
+	      				datasets: minerDatasets
+	      			},
+					options: {
+						scales: { 
+						   yAxes: [
+						   {
+						      id: 'miner',
+						      position: 'left',
+			        	      scalePositionLeft: true,
+						      stacked: false,
+						      ticks: {
+						             beginAtZero: true,
+						             callback: function(value) {if (value % 1 === 0) {return value;}}
+						           },
+						      scaleLabel: {
+						             display: true,
+						             labelString: 'Miner',
+						             fontSize: 16
+						           }
+						    }
+						  ],
+						  xAxes: [{
+						   	  type: 'time',
+						   	  distribution: 'series',
+						   	  time: {
+			        			unit: 'minute',
+			        			displayFormats: {
+			           				minute: 'HH:mm'
+			        		  	}
+			        		  },
+			        		  ticks: {
+			        		  	stepSize: 10,
+			        		  	autoSkip: true,
+			        			maxTicksLimit: 60
+			        		  }
+						    }]
+						},
+						elements: {
+			            	point:{
+			        		    radius: 2
+			            	}
+			            },
+						responsive: true,
+			    		maintainAspectRatio: false
+			    	},      			
+	      			plugins: {
+	      				colorschemes: {
+	    					scheme: 'brewer.Paired12'
+	  					}		
+	      			}
+				});
+			}
 		});
 	}
 </script>
