@@ -304,7 +304,7 @@ int Service::getClientStatistics(httplib::Response& res)
         algoStatisticEntries.PushBack(algoStatisticEntry, allocator);
       }
 
-      algoStatistics.AddMember("algos", algoStatisticEntries, allocator);
+      algoStatistics.AddMember("statistics", algoStatisticEntries, allocator);
       clientStatistics.PushBack(algoStatistics, allocator);
     }
 
