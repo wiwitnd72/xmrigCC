@@ -1,8 +1,8 @@
 # XMRigCC 
 
-XMRigCC is a high performance RandomX, CryptoNight and Argon2 CPU miner, with official support for Windows.
+XMRigCC is a high performance RandomX, CryptoNight, Argon2 and AstroBWT CPU miner for support for Windows, Linux and MacOS.
 
-:bulb: **This is the CPU variant of XMRigCC, if you're looking for the AMD GPU (OpenCL) variant [click here](https://github.com/Bendr0id/xmrigCC-amd/).**
+:bulb: **This is the CPU variant of XMRigCC, if you're looking for the AMD GPU (OpenCL, Cryptonight only) variant [click here](https://github.com/Bendr0id/xmrigCC-amd/).**
 
 [![Windows Build status](https://ci.appveyor.com/api/projects/status/l8v7cuuy320a4tpd?svg=true)](https://ci.appveyor.com/project/Bendr0id/xmrigcc)
 [![Docker Build status](https://img.shields.io/docker/build/bendr0id/xmrigcc.svg)](https://hub.docker.com/r/bendr0id/xmrigcc/)
@@ -24,21 +24,21 @@ PushOver or Telegram automatically so that you dont need to watch your miners al
 
 Full Windows/Linux compatible, and you can mix Linux and Windows miner on one XMRigCCServer.
 
-## Additional features of XMRigCC (on top of XMRig)
+## Features of XMRigCC
 
 * **Support of AstroBWT variant (algo: "astrobwt")**
 * **Support of RandomKEVA variant (algo: "rx/keva")**
 * **Support of CN-Talleo variant (algo: "cn-pico/tlo")**
 * **Support of RandomSFX variant (algo: "rx/sfx")**
 * **Support of RandomARQ variant (algo: "rx/arq")**
-* **Support of UPX2 variant (algo: "cn-extremelite/upx2")**
+* **Support of UPX2 variant (algo: "cn-extremelite/upx2")** b
 * **Support of CN-Conceal variant (algo: "cn/conceal")**
-* **Better performance for ARMv8 CPUs**
+* **Better performance on ARMv8 CPUs**
 * Full SSL/TLS support
 * NUMA support
 * Command and control server
 * CC Dashboard with:
-    * statistics of all connected miners
+    * statistics of all connected miners with graphs
     * remote control miners (start/stop/restart/shutdown) 
     * remote configuration changes of miners
     * simple config editor for miner / config templates 
