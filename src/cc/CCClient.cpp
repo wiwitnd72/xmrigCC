@@ -331,7 +331,7 @@ void xmrig::CCClient::fetchConfig()
 
         if (!m_base->config()->isWatch())
         {
-          dynamic_cast<IWatcherListener*>(m_base)->onFileChanged(m_base->config()->fileName());
+          static_cast<IWatcherListener*>(m_base)->onFileChanged(m_base->config()->fileName());
         }
 
         LOG_WARN(CLEAR "%s " YELLOW("Config updated. -> reload"), tag);
