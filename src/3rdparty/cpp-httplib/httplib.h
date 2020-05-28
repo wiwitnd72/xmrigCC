@@ -33,7 +33,7 @@
 #endif
 
 #ifndef CPPHTTPLIB_READ_TIMEOUT_SECOND
-#define CPPHTTPLIB_READ_TIMEOUT_SECOND 2
+#define CPPHTTPLIB_READ_TIMEOUT_SECOND 3
 #endif
 
 #ifndef CPPHTTPLIB_READ_TIMEOUT_USECOND
@@ -41,7 +41,7 @@
 #endif
 
 #ifndef CPPHTTPLIB_WRITE_TIMEOUT_SECOND
-#define CPPHTTPLIB_WRITE_TIMEOUT_SECOND 2
+#define CPPHTTPLIB_WRITE_TIMEOUT_SECOND 3
 #endif
 
 #ifndef CPPHTTPLIB_WRITE_TIMEOUT_USECOND
@@ -1391,13 +1391,13 @@ inline bool from_hex_to_i(const std::string &s, size_t i, size_t cnt,
 }
 
 inline std::string from_i_to_hex(size_t n) {
-const char *charset = "0123456789abcdef";
-std::string ret;
-do {
-ret = charset[n & 15] + ret;
-n >>= 4;
-} while (n > 0);
-return ret;
+  const char *charset = "0123456789abcdef";
+  std::string ret;
+  do {
+    ret = charset[n & 15] + ret;
+    n >>= 4;
+  } while (n > 0);
+  return ret;
 }
 
 inline size_t to_utf8(int code, char *buff) {
@@ -1904,16 +1904,6 @@ socket_t create_socket(const char *host, int port, Fn fn,
     setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, reinterpret_cast<char *>(&yes),
                sizeof(yes));
 #endif
-
-    struct timeval readTimeout{}, writeTimeout{};
-    readTimeout.tv_sec = CPPHTTPLIB_READ_TIMEOUT_SECOND;
-    readTimeout.tv_usec = CPPHTTPLIB_READ_TIMEOUT_USECOND;
-
-    writeTimeout.tv_sec = CPPHTTPLIB_WRITE_TIMEOUT_SECOND;
-    writeTimeout.tv_usec = CPPHTTPLIB_WRITE_TIMEOUT_USECOND;
-
-    setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&readTimeout, sizeof(readTimeout));
-    setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (char *)&writeTimeout, sizeof(writeTimeout));
 
     if (rp->ai_family == AF_INET6) {
       int no = 0;
@@ -4703,13 +4693,13 @@ inline bool Client::process_request(Stream &strm, const Request &req,
 
 inline bool Client::process_and_close_socket(
   socket_t sock, size_t request_count,
-std::function<bool(Stream &strm, bool last_connection,
-bool &connection_close)>
-callback) {
-request_count = (std::min)(request_count, keep_alive_max_count_);
-return detail::process_and_close_socket(
-true, sock, request_count, read_timeout_sec_, read_timeout_usec_,
-write_timeout_sec_, write_timeout_usec_, callback);
+  std::function<bool(Stream &strm, bool last_connection,
+                     bool &connection_close)>
+  callback) {
+  request_count = (std::min)(request_count, keep_alive_max_count_);
+  return detail::process_and_close_socket(
+    true, sock, request_count, read_timeout_sec_, read_timeout_usec_,
+    write_timeout_sec_, write_timeout_usec_, callback);
 }
 
 inline bool Client::is_ssl() const { return false; }
@@ -5409,60 +5399,60 @@ inline SSL_CTX *SSLClient::ssl_context() const { return ctx_; }
 
 inline bool SSLClient::process_and_close_socket(
   socket_t sock, size_t request_count,
-std::function<bool(Stream &strm, bool last_connection,
-bool &connection_close)>
-callback) {
+  std::function<bool(Stream &strm, bool last_connection,
+                     bool &connection_close)>
+  callback) {
 
-request_count = std::min(request_count, keep_alive_max_count_);
+  request_count = std::min(request_count, keep_alive_max_count_);
 
-return is_valid() &&
-detail::process_and_close_socket_ssl(
-true, sock, request_count, read_timeout_sec_, read_timeout_usec_,
-write_timeout_sec_, write_timeout_usec_, ctx_, ctx_mutex_,
-[&](SSL *ssl) {
-if (ca_cert_file_path_.empty() && ca_cert_store_ == nullptr) {
-SSL_CTX_set_verify(ctx_, SSL_VERIFY_NONE, nullptr);
-} else if (!ca_cert_file_path_.empty()) {
-if (!SSL_CTX_load_verify_locations(
-  ctx_, ca_cert_file_path_.c_str(), nullptr)) {
-return false;
-}
-SSL_CTX_set_verify(ctx_, SSL_VERIFY_PEER, nullptr);
-} else if (ca_cert_store_ != nullptr) {
-if (SSL_CTX_get_cert_store(ctx_) != ca_cert_store_) {
-SSL_CTX_set_cert_store(ctx_, ca_cert_store_);
-}
-SSL_CTX_set_verify(ctx_, SSL_VERIFY_PEER, nullptr);
-}
+  return is_valid() &&
+         detail::process_and_close_socket_ssl(
+           true, sock, request_count, read_timeout_sec_, read_timeout_usec_,
+           write_timeout_sec_, write_timeout_usec_, ctx_, ctx_mutex_,
+           [&](SSL *ssl) {
+             if (ca_cert_file_path_.empty() && ca_cert_store_ == nullptr) {
+               SSL_CTX_set_verify(ctx_, SSL_VERIFY_NONE, nullptr);
+             } else if (!ca_cert_file_path_.empty()) {
+               if (!SSL_CTX_load_verify_locations(
+                 ctx_, ca_cert_file_path_.c_str(), nullptr)) {
+                 return false;
+               }
+               SSL_CTX_set_verify(ctx_, SSL_VERIFY_PEER, nullptr);
+             } else if (ca_cert_store_ != nullptr) {
+               if (SSL_CTX_get_cert_store(ctx_) != ca_cert_store_) {
+                 SSL_CTX_set_cert_store(ctx_, ca_cert_store_);
+               }
+               SSL_CTX_set_verify(ctx_, SSL_VERIFY_PEER, nullptr);
+             }
 
-if (SSL_connect(ssl) != 1) { return false; }
+             if (SSL_connect(ssl) != 1) { return false; }
 
-if (server_certificate_verification_) {
-verify_result_ = SSL_get_verify_result(ssl);
+             if (server_certificate_verification_) {
+               verify_result_ = SSL_get_verify_result(ssl);
 
-if (verify_result_ != X509_V_OK) { return false; }
+               if (verify_result_ != X509_V_OK) { return false; }
 
-auto server_cert = SSL_get_peer_certificate(ssl);
+               auto server_cert = SSL_get_peer_certificate(ssl);
 
-if (server_cert == nullptr) { return false; }
+               if (server_cert == nullptr) { return false; }
 
-if (!verify_host(server_cert)) {
-X509_free(server_cert);
-return false;
-}
-X509_free(server_cert);
-}
+               if (!verify_host(server_cert)) {
+                 X509_free(server_cert);
+                 return false;
+               }
+               X509_free(server_cert);
+             }
 
-return true;
-},
-[&](SSL *ssl) {
-SSL_set_tlsext_host_name(ssl, host_.c_str());
-return true;
-},
-[&](SSL * /*ssl*/, Stream &strm, bool last_connection,
-bool &connection_close) {
-return callback(strm, last_connection, connection_close);
-});
+             return true;
+           },
+           [&](SSL *ssl) {
+             SSL_set_tlsext_host_name(ssl, host_.c_str());
+             return true;
+           },
+           [&](SSL * /*ssl*/, Stream &strm, bool last_connection,
+               bool &connection_close) {
+             return callback(strm, last_connection, connection_close);
+           });
 }
 
 inline bool SSLClient::is_ssl() const { return true; }
